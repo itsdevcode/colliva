@@ -61,7 +61,7 @@ class UserResource extends Resource
                 $record->forceFill(['email_verified_at' => null])->save();
             }
 
-return $data;
+            return $data;
         }), Action::make('changeRole')->schema([Select::make('role')->options(['creator' => 'Creator', 'brand' => 'Brand', 'admin' => 'Admin'])->required()])->requiresConfirmation()->action(function (User $record, array $data): void {
             abort_unless(auth()->user()->role === 'admin' && $record->id !== auth()->id(), 403);
             $record->forceFill(['role' => $data['role']])->save();

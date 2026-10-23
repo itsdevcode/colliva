@@ -13,6 +13,12 @@
 .env
 .env.backup
 .env.production
+.env.*
+!.env.example
+/.pint.cache
+/.php-cs-fixer.cache
+/.phpstan.cache
+/coverage
 .phpactor.json
 .phpunit.result.cache
 Homestead.json
