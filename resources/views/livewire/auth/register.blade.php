@@ -7,6 +7,10 @@
 
         <form method="POST" action="{{ route('register.store') }}" class="flex flex-col gap-6">
             @csrf
+            <flux:select name="role" label="I’m joining as">
+                <option value="creator" @selected(old('role', request('role')) !== 'brand')>Creator — showcase my work</option>
+                <option value="brand" @selected(old('role', request('role')) === 'brand')>Brand — find my next collaborator</option>
+            </flux:select>
             <!-- Name -->
             <flux:input
                 name="name"
