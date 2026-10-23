@@ -24,6 +24,9 @@ class CreatorOnboarding extends Component
     #[Locked]
     public ?int $editingPackageId = null;
 
+    #[Locked]
+    public ?int $editingPortfolioId = null;
+
     public int $step = 1;
 
     public string $displayName = '';
@@ -45,6 +48,8 @@ class CreatorOnboarding extends Component
     public bool $available = true;
 
     public ?TemporaryUploadedFile $photo = null;
+
+    public ?TemporaryUploadedFile $cover = null;
 
     public ?TemporaryUploadedFile $portfolioImage = null;
 
@@ -112,10 +117,14 @@ class CreatorOnboarding extends Component
         Gate::authorize('create', CreatorProfile::class);
         $profile = auth()->user()->creatorProfile;
         $this->validate(['displayName' => ['required', 'string', 'max:100'], 'slug' => ['required', 'string', 'max:100', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', Rule::unique('creator_profiles', 'slug')->ignore($profile?->id)], 'bio' => ['required', 'string', 'max:2000'], 'city' => ['required', 'exists:locations,id'], 'category' => ['required', 'exists:categories,id'], 'languages' => ['required', 'array', 'max:10'], 'languages.*' => ['integer', 'exists:languages,id'], 'secondaryCategories' => ['array', 'max:8'], 'secondaryCategories.*' => ['integer', 'exists:categories,id'], 'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096']]);
+        $this->validate(['cover' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096']]);
         DB::transaction(function () {
             $data = ['display_name' => $this->displayName, 'slug' => $this->slug, 'bio' => $this->bio, 'location_id' => $this->city, 'category_id' => $this->category, 'available' => $this->available];
             if ($this->photo) {
                 $data['photo_path'] = $this->photo->store('creator-photos', config('filesystems.media_disk'));
+            }
+            if ($this->cover) {
+                $data['cover_path'] = $this->cover->store('creator-covers', config('filesystems.media_disk'));
             }
             $profile = auth()->user()->creatorProfile()->updateOrCreate(['user_id' => auth()->id()], $data);
             $profile->languages()->sync($this->languages);
@@ -123,6 +132,7 @@ class CreatorOnboarding extends Component
             $this->markDraft($profile);
         });
         $this->photo = null;
+        $this->cover = null;
         $this->step = 2;
         session()->flash('status', 'Profile draft saved.');
     }
@@ -141,11 +151,36 @@ class CreatorOnboarding extends Component
     public function addPortfolio(): void
     {
         $profile = $this->profile();
-        $this->validate(['portfolioTitle' => ['required', 'string', 'max:150'], 'portfolioDescription' => ['nullable', 'string', 'max:2000'], 'portfolioImage' => ['required_without:videoUrl', 'nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192'], 'videoUrl' => ['required_without:portfolioImage', 'nullable', 'url:https', 'max:255'], 'rightsConfirmed' => ['accepted']]);
-        $profile->portfolioItems()->create(['title' => $this->portfolioTitle, 'description' => $this->portfolioDescription, 'image_path' => $this->portfolioImage?->store('portfolio', config('filesystems.media_disk')), 'video_url' => $this->videoUrl ?: null, 'rights_confirmed_at' => now()]);
-        $this->markDraft($profile);
-        $this->reset('portfolioTitle', 'portfolioDescription', 'portfolioImage', 'videoUrl', 'rightsConfirmed');
-        session()->flash('status', 'Portfolio item added.');
+        $item = $this->editingPortfolioId ? $profile->portfolioItems()->findOrFail($this->editingPortfolioId) : null;
+        $this->validate(['portfolioTitle' => ['required', 'string', 'max:150'], 'portfolioDescription' => ['nullable', 'string', 'max:2000'], 'portfolioImage' => [Rule::requiredIf(! $item?->image_path && $this->videoUrl === ''), 'nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192'], 'videoUrl' => [Rule::requiredIf(! $item?->image_path && ! $this->portfolioImage), 'nullable', 'url:https', 'max:255'], 'rightsConfirmed' => ['accepted']]);
+        DB::transaction(function () use ($profile, $item) {
+            $data = ['title' => $this->portfolioTitle, 'description' => $this->portfolioDescription, 'image_path' => $this->portfolioImage?->store('portfolio', config('filesystems.media_disk')) ?? $item?->image_path, 'video_url' => $this->videoUrl ?: null, 'rights_confirmed_at' => now()];
+            if ($item) {
+                $item->update($data);
+            } else {
+                $profile->portfolioItems()->create($data);
+            }
+            $this->markDraft($profile);
+        });
+        $this->cancelPortfolioEdit();
+        session()->flash('status', 'Portfolio item saved.');
+    }
+
+    public function editPortfolio(int $id): void
+    {
+        $item = $this->profile()->portfolioItems()->findOrFail($id);
+        $this->cancelPortfolioEdit();
+        $this->editingPortfolioId = $item->id;
+        $this->portfolioTitle = $item->title;
+        $this->portfolioDescription = $item->description ?? '';
+        $this->videoUrl = $item->video_url ?? '';
+        $this->step = 4;
+    }
+
+    public function cancelPortfolioEdit(): void
+    {
+        $this->reset('editingPortfolioId', 'portfolioTitle', 'portfolioDescription', 'portfolioImage', 'videoUrl', 'rightsConfirmed');
+        $this->resetValidation();
     }
 
     public function addPackage(): void

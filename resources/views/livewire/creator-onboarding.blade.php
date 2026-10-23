@@ -42,6 +42,7 @@
 <label>Profile photograph<input type="file" wire:model="photo" accept="image/jpeg,image/png,image/webp">
 <small class="form-help">JPG, PNG or WebP. Up to 4 MB.</small>
 </label>
+<label>Profile cover (optional)<input type="file" wire:model="cover" accept="image/jpeg,image/png,image/webp"><small class="form-help">JPG, PNG or WebP. Up to 4 MB.</small></label>
 <label class="checkbox-label">
 <input type="checkbox" wire:model="available">I’m available for collaborations</label>
 <button class="button button-purple" wire:loading.attr="disabled">Save draft & continue <x-market-icon name="arrow-right"/>
@@ -95,9 +96,11 @@
 </div>
 <label class="checkbox-label">
 <input type="checkbox" wire:model="rightsConfirmed" required>I own this work or have permission to display it publicly.</label>
-<button class="button button-purple" wire:loading.attr="disabled">Add to portfolio</button>
+<button class="button button-purple" wire:loading.attr="disabled">{{ $editingPortfolioId ? 'Save portfolio item' : 'Add to portfolio' }}</button>
+@if($editingPortfolioId)<button type="button" class="text-link" wire:click="cancelPortfolioEdit">Cancel editing</button><p class="form-help">Your existing image is kept unless you upload a replacement.</p>@endif
 </form>@foreach($profile->portfolioItems as $item)<div class="item-row" wire:key="portfolio-{{ $item->id }}">
 <span>{{ $item->title }}</span>
+<button class="text-link" wire:click="editPortfolio({{ $item->id }})">Edit</button>
 <button class="danger" wire:click="deletePortfolio({{ $item->id }})">Remove</button>
 </div>@endforeach</section>
 @elseif($step === 5)<section class="workspace-card">

@@ -49,9 +49,15 @@ The homepage uses original CSS artwork. It does not impersonate registered creat
 - Laravel’s queue/cache abstractions permit Redis later. Notifications currently use the database queue.
 - Commercial terms are stored on collaboration requests; a future payment provider can attach its own records. No payment status is inferred from collaboration acceptance.
 - Reviews, online payments, subscriptions, scraping and automated identity verification are outside this release.
-- Applications are unique per campaign/creator, including withdrawn applications; the UI does not currently resubmit withdrawn applications.
+- Applications are unique per campaign/creator. Creators may resubmit withdrawn applications with an updated proposal and quote; active or final applications cannot be duplicated.
 - Video work and deliverables use HTTPS links. Videos are not downloaded, embedded or transcoded.
-- Campaigns can be saved as drafts and submitted for moderation; full editing of existing campaign briefs is not yet provided.
-- Portfolio items can be added and removed; service packages support editing.
+- Campaign drafts support editing and resubmission for moderation. Pending, published and final campaigns cannot be edited; the state is rechecked under a database lock when saving.
+- Portfolio items and service packages support editing. Existing portfolio images are retained unless replaced, and portfolio edits require fresh rights confirmation and another publication review. Profile covers can be uploaded during onboarding.
 - Media uploads use generated paths and validated raster formats. Public media is intended for portfolios; account deletion removes database records but does not currently run a background storage-purge job.
 - Responsive breakpoints, focus states, accessible labels and reduced-motion rules are implemented. Browser-based visual, keyboard and Lighthouse audits remain to be performed.
+
+## Proposed account cleanup — pending approval
+
+After a user confirms account deletion with their password, delete that account's notification history and queue removal of its stored profile photograph, cover image and portfolio images. Dispatch storage cleanup only after the database deletion commits. The job would receive the exact stored file keys and selected media disk, restrict deletion to creator-upload directories, and retry transient storage failures through the existing queue.
+
+This permanently removes those files and notification records. Automatic approval review rejected the implementation because this destructive extension had not been specifically approved. The existing account-deletion behavior is preserved; no cleanup job is currently installed or dispatched. Approval is required before implementing this proposal.

@@ -8,10 +8,12 @@
 </div>
 </div>
 <x-workspace-errors/>
-@if(auth()->user()->role === 'brand')<section class="workspace-card" x-data="{ open: false }">
-<button class="text-link" @click="open = !open" :aria-expanded="open">
+@if(auth()->user()->role === 'brand')<section class="workspace-card">
+<button class="text-link" wire:click="newCampaign" aria-expanded="{{ $formOpen ? 'true' : 'false' }}">
 <x-market-icon name="briefcase"/>Create a new campaign +</button>
-<form wire:submit="createCampaign(true)" x-show="open" x-cloak style="margin-top:25px">
+@if($formOpen)
+<form wire:submit="createCampaign(true)" style="margin-top:25px">
+<h2>{{ $editingCampaignId ? 'Edit your campaign draft.' : 'Start a new campaign.' }}</h2>
 <label>Campaign title<input wire:model="title" required maxlength="150">
 </label>
 <label>The idea<textarea wire:model="description" required>
@@ -48,10 +50,12 @@
 </div>
 <div class="campaign-actions">
 <button class="button button-purple" wire:loading.attr="disabled">Submit for moderation ↗</button>
-<button type="button" class="button button-outline" wire:click="createCampaign(false)" wire:loading.attr="disabled">Save draft</button>
+<button type="button" class="button button-outline" wire:click="createCampaign(false)" wire:loading.attr="disabled">{{ $editingCampaignId ? 'Save changes' : 'Save draft' }}</button>
+<button type="button" class="text-link" wire:click="cancelCampaignEdit">Cancel</button>
 </div>
 <p class="form-help">Complete your business profile first. Campaigns appear to creators after admin approval.</p>
 </form>
+@endif
 </section>@endif
 @forelse($campaigns as $campaign)<article class="workspace-card" wire:key="campaign-{{ $campaign->id }}">
 <span class="status-badge">{{ $campaign->status }}</span>
@@ -69,7 +73,7 @@
 <p>{{ $campaign->deliverables }}</p>
 <h3 style="margin-top:20px">Requirements</h3>
 <p>{{ $campaign->requirements }}</p>
-@if(auth()->user()->role === 'brand')<div class="campaign-actions">@if($campaign->status === 'draft')<button class="button button-purple" wire:click="changeStatus({{ $campaign->id }},'pending')">Submit for moderation</button>@endif @if($campaign->status === 'published')<button class="button button-outline" wire:click="changeStatus({{ $campaign->id }},'closed')">Close applications</button>@endif @if($campaign->status === 'closed')<button class="button button-outline" wire:click="changeStatus({{ $campaign->id }},'completed')">Mark completed</button>@endif @if(in_array($campaign->status,['draft','published','closed']))<button class="button button-outline" wire:click="changeStatus({{ $campaign->id }},'cancelled')">Cancel campaign</button>@endif</div>
+@if(auth()->user()->role === 'brand')<div class="campaign-actions">@if($campaign->status === 'draft')<button class="button button-outline" wire:click="editCampaign({{ $campaign->id }})">Edit draft</button><button class="button button-purple" wire:click="changeStatus({{ $campaign->id }},'pending')">Submit for moderation</button>@endif @if($campaign->status === 'published')<button class="button button-outline" wire:click="changeStatus({{ $campaign->id }},'closed')">Close applications</button>@endif @if($campaign->status === 'closed')<button class="button button-outline" wire:click="changeStatus({{ $campaign->id }},'completed')">Mark completed</button>@endif @if(in_array($campaign->status,['draft','published','closed']))<button class="button button-outline" wire:click="changeStatus({{ $campaign->id }},'cancelled')">Cancel campaign</button>@endif</div>
 <h3 style="margin-top:30px">Creator applications</h3>@forelse($campaign->applications as $application)<div class="collaboration-detail" wire:key="application-{{ $application->id }}">
 <strong>{{ $application->creatorProfile->display_name }}</strong>
 <span class="status-badge">{{ $application->status }}</span>
