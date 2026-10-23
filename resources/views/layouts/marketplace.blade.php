@@ -93,5 +93,6 @@
 </div>
 </footer>
 @livewireScripts
+@fluxScripts
 </body>
 </html>

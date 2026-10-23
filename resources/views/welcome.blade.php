@@ -14,9 +14,12 @@
 
     <section class="discovery-strip container" aria-label="Find creators">
         <form action="{{ route('creators') }}" method="get">
-            <label class="search-field"><x-market-icon name="search" /><span class="sr-only">Search creators</span><input type="search" name="search" placeholder="Name or creative style"></label>
-            <label><span class="field-caption">Location</span><select name="city"><option value="">All locations</option>@foreach($locations as $location)<option value="{{ $location->slug }}">{{ $location->name }}</option>@endforeach</select></label>
-            <label><span class="field-caption">Category</span><select name="category"><option value="">All categories</option>@foreach($categories as $category)<option value="{{ $category->slug }}">{{ $category->name }}</option>@endforeach</select></label>
+            <label class="search-field">
+                <x-market-icon name="search" />
+                <span class="search-field-copy"><span class="field-caption">Find your creator</span><input type="search" name="search" placeholder="Name or creative style"></span>
+            </label>
+            <x-discovery-picker name="city" label="Location" placeholder="All locations" :options="$locations" />
+            <x-discovery-picker name="category" label="Category" placeholder="All categories" :options="$categories" />
             <x-colliva-button type="submit">Find Creators</x-colliva-button>
         </form>
     </section>
@@ -30,7 +33,7 @@
         </div>
     @endif
 
-    <section class="section container">
+    <section class="section container featured-section">
         <x-colliva-heading eyebrow="Meet your next creative partner" title="Original voices. Real possibility." description="Explore portfolios, compare services, and find a style that feels right for your brand.">
             <a class="text-link" href="{{ route('creators') }}">View all creators <x-market-icon name="arrow-right" /></a>
         </x-colliva-heading>

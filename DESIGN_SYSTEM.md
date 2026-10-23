@@ -37,6 +37,7 @@ Purple is reserved for meaningful actions and states. Marketing surfaces stay ne
 | `x-colliva-heading` | `title`, optional `eyebrow` / `description`, action slot. Stacks on mobile. |
 | `x-colliva-empty` | `title`, `description`, optional existing icon name, action slot. Used for launch and filtered discovery empties. |
 | `x-colliva-drawer` | `name`, `title`; native dialog opened from an Alpine scope with `$refs.name.showModal()`. Supports focus containment, Escape, explicit close and backdrop dismissal. Mobile bottom sheet; desktop side drawer. Use `wire:ignore.self` when Livewire owns its contents. |
+| `x-discovery-picker` | Homepage location/category field using the installed Flux radio menu, Alpine state and a named hidden GET input. Shared labels, rounded popup, selected state, keyboard navigation and responsive sizing replace the browser-native dropdown. |
 | `x-creator-filters` | Receives locations/categories/languages; shares existing URL-bound Livewire filters between desktop and mobile. Search debounced 300ms, numeric inputs 400ms. |
 | `x-creator-card` | Receives eager-loaded creator data. Original portfolio preview, category, avatar, name, location, social platforms, verification, availability, real starting price and profile link. Missing pricing says “Enquire for pricing”. |
 | `x-portfolio-tile` | `item`: original uploaded image, title, description and external original-video link. Responsive aspect ratio and lazy loading. |
