@@ -10,6 +10,10 @@
             </div>
             <p class="local-caption"><x-market-icon name="pin" />Starting in Yamunanagar &amp; Jagadhri, Haryana.</p>
         </div>
+        <figure class="hero-editorial">
+            <img src="{{ asset('images/creative-studio.webp') }}" alt="Editorial illustration of a sunlit creative studio with a camera, notebook, and ceramics" width="1536" height="1024" fetchpriority="high" decoding="async">
+            <figcaption>Room for your next big idea.<span>Editorial illustration</span></figcaption>
+        </figure>
     </section>
 
     <section class="discovery-strip container" aria-label="Find creators">
@@ -52,10 +56,16 @@
     <section class="category-section">
         <div class="container">
             <x-colliva-heading eyebrow="Made for your next idea" title="Find your creative direction." description="From everyday stories to standout campaigns, discover the right kind of talent." />
+            <div class="category-showcase">
+                <figure class="category-editorial">
+                    <img src="{{ asset('images/beauty-still-life.webp') }}" alt="Editorial beauty still life with frosted glass, peach, and lavender linen" width="1536" height="1024" loading="lazy" decoding="async">
+                    <figcaption>Fresh ideas. Beautifully brought to life.<span>Editorial illustration</span></figcaption>
+                </figure>
             <div class="category-grid">
                 @foreach($categories as $category)
                     <a class="category-tile" href="{{ route('creators', ['category' => $category->slug]) }}"><x-market-icon name="camera" /><span>{{ $category->name }}</span><x-market-icon name="arrow-up-right" /></a>
                 @endforeach
+            </div>
             </div>
             <div class="location-section">
                 <h2>Closer to your audience.</h2>
