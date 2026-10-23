@@ -1,20 +1,25 @@
 <div class="container section discovery-page" x-data>
 <span class="eyebrow">Discover your next creative partner</span>
 <div class="section-heading">
-    <div><h1>Find your people.</h1><p>Explore original work. Find a shared vision.</p></div>
+    <div><h1>Find creators for your next campaign.</h1><p>Compare original work, platforms, and services. Find the right fit for your brand.</p></div>
+</div>
+<div class="discovery-platforms" aria-label="Filter by creator platform">
+    @foreach(['' => 'All creators', 'instagram' => 'Instagram', 'youtube' => 'YouTube', 'ugc' => 'UGC creators'] as $value => $label)
+        <button type="button" wire:click="$set('platform', '{{ $value }}')" @class(['is-active' => $platform === $value]) aria-pressed="{{ $platform === $value ? 'true' : 'false' }}">{{ $label }}</button>
+    @endforeach
 </div>
 <div class="mobile-discovery-tools">
     <label><span class="sr-only">Search creators</span><input type="search" wire:model.live.debounce.300ms="search" placeholder="Name or username"></label>
     <button type="button" class="button button-outline" @click="$refs.filters.showModal()" aria-haspopup="dialog"><x-market-icon name="filter" />Filters</button>
 </div>
 <x-colliva-drawer name="filters" title="Filter creators" wire:ignore.self>
-    <div class="filter-panel mobile-filter-panel"><x-creator-filters :locations="$locations" :categories="$categories" :languages="$languages" /></div>
+    <div class="filter-panel mobile-filter-panel"><x-creator-filters :locations="$locations" :categories="$categories" :languages="$languages" :advanced-active="$minFollowers !== '' || $maxFollowers !== '' || $language !== '' || $available || $verified" /></div>
     <button type="button" class="button button-purple drawer-done" @click="$refs.filters.close()">Show {{ $creators->total() }} {{ Str::plural('creator', $creators->total()) }}</button>
 </x-colliva-drawer>
 <x-workspace-errors/>
 <div class="discovery-layout">
 <aside class="filter-panel desktop-filters" aria-label="Filter creators">
-    <x-creator-filters :locations="$locations" :categories="$categories" :languages="$languages" />
+    <x-creator-filters :locations="$locations" :categories="$categories" :languages="$languages" :advanced-active="$minFollowers !== '' || $maxFollowers !== '' || $language !== '' || $available || $verified" />
 </aside>
 
 <div>
