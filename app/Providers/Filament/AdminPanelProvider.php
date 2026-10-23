@@ -26,7 +26,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->brandName('Shoutly · Administration')
+            ->brandName('Colliva · Administration')
             ->login()
             ->colors([
                 'primary' => Color::Violet,

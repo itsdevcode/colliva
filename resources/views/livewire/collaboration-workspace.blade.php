@@ -8,7 +8,7 @@
 </div>
 </div>
 <x-workspace-errors/>
-<div class="notice" style="background:#f0ebff">Payments are coordinated directly between you and your collaborator. Shoutly does not collect payments, secure funds or provide escrow.</div>
+<div class="notice notice-neutral">Payments are coordinated directly between you and your collaborator. Colliva does not collect payments, secure funds or provide escrow.</div>
 @if(auth()->user()->role === 'brand' && $creator)<section class="workspace-card">
 <h2>Tell them what you have in mind.</h2>
 <form wire:submit="send">
@@ -25,7 +25,7 @@
 <label>Delivery deadline<input type="date" wire:model="deadline" required>
 </label>
 </div>
-<button class="button button-purple" wire:loading.attr="disabled">Send brief & confirm terms ↗</button>
+<button class="button button-purple" wire:loading.attr="disabled">Send brief & confirm terms <x-market-icon name="arrow-up-right" /></button>
 <small class="form-help">Sending a brief confirms your proposed terms. Work begins only after the creator accepts.</small>
 </form>
 </section>@endif
@@ -64,7 +64,7 @@
 <h3>Agreed collaboration</h3>
 <p>Both parties confirmed the scope and commercial terms.</p>@foreach($offer->collaboration->deliverables as $deliverable)<div class="item-row" wire:key="deliverable-{{ $deliverable->id }}">
 <div>
-<a class="text-link" href="{{ $deliverable->url }}" target="_blank" rel="noopener noreferrer">View submitted work ↗</a>
+<a class="text-link" href="{{ $deliverable->url }}" target="_blank" rel="noopener noreferrer">View submitted work <x-market-icon name="arrow-up-right" /></a>
 <p>{{ $deliverable->notes }}</p>
 <small>{{ $deliverable->created_at->format('d M Y, H:i') }}</small>
 </div>
@@ -84,7 +84,7 @@
 <div class="empty-symbol">✳</div>
 <h2>A great collaboration starts with hello.</h2>
 <p>{{ auth()->user()->role === 'brand' ? 'Find a creator you connect with and send them a brief from their profile.' : 'Your collaboration requests will appear here. Keep making work that feels like you.' }}</p>
-<a class="button button-outline" href="{{ route('creators') }}">Explore creators ↗</a>
+<a class="button button-outline" href="{{ route('creators') }}">Explore creators <x-market-icon name="arrow-up-right" /></a>
 </div>@endforelse
 <section class="workspace-card" style="margin-top:30px">
 <div class="section-heading">

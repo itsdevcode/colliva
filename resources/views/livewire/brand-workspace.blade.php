@@ -6,7 +6,7 @@
 </h1>
 <p>Tell your story. Find your people. Make something good.</p>
 </div>
-<a class="button button-purple" href="{{ route('campaigns') }}">Create a campaign ↗</a>
+<a class="button button-purple" href="{{ route('campaigns') }}">Create a campaign <x-market-icon name="arrow-up-right" /></a>
 </div>
 <x-workspace-errors/>
 <section class="workspace-card">
@@ -30,10 +30,9 @@
 <section class="workspace-card">
 <h2>Your creative shortlist.</h2>@forelse($savedCreators as $creator)<div class="item-row" wire:key="saved-{{ $creator->id }}">
 <div>
-<a class="text-link" href="{{ route('creator.show',$creator->slug) }}">{{ $creator->display_name }} ↗</a>
+<a class="text-link" href="{{ route('creator.show',$creator->slug) }}">{{ $creator->display_name }} <x-market-icon name="arrow-up-right" /></a>
 <small>{{ $creator->location->name }} · {{ $creator->category->name }}</small>
 </div>
 <button class="danger" wire:click="removeSaved({{ $creator->id }})">Remove</button>
-</div>@empty<p>Your shortlist is a blank canvas. Save creators while exploring to find them here.</p>
-<a class="text-link" style="margin-top:20px" href="{{ route('creators') }}">Discover creators ↗</a>@endforelse</section>
+</div>@empty<x-colliva-empty title="Your shortlist starts here." description="Save creators as you explore. Their profiles will be ready whenever your next idea arrives." icon="heart"><x-colliva-button :href="route('creators')" variant="outline">Discover Creators <x-market-icon name="arrow-right" /></x-colliva-button></x-colliva-empty>@endforelse</section>
 </div>

@@ -49,7 +49,7 @@
 </label>
 </div>
 <div class="campaign-actions">
-<button class="button button-purple" wire:loading.attr="disabled">Submit for moderation ↗</button>
+<button class="button button-purple" wire:loading.attr="disabled">Submit for moderation <x-market-icon name="arrow-up-right" /></button>
 <button type="button" class="button button-outline" wire:click="createCampaign(false)" wire:loading.attr="disabled">{{ $editingCampaignId ? 'Save changes' : 'Save draft' }}</button>
 <button type="button" class="text-link" wire:click="cancelCampaignEdit">Cancel</button>
 </div>
@@ -89,7 +89,7 @@
 </label>
 <label>Your quote (₹)<input type="number" min="1" step=".01" wire:model="quotes.{{ $campaign->id }}" required>
 </label>
-<button class="button button-purple" wire:loading.attr="disabled">Send application ↗</button>
+<button class="button button-purple" wire:loading.attr="disabled">Send application <x-market-icon name="arrow-up-right" /></button>
 </form>@else<p style="margin-top:20px">This opportunity requires an approved, available profile matching the campaign’s location, category and platforms.</p>@endcan @endif</article>@empty<div class="empty-state">
 <div class="empty-symbol">✳</div>
 <h2>Your next opportunity is taking shape.</h2>
