@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ $title ?? 'Local talent. Extraordinary possibilities.' }} — Shoutly</title>
-<meta name="description" content="{{ $description ?? 'Discover local influencers and UGC creators in Yamunanagar, Jagadhri and across Haryana. Find your creative partner on Shoutly.' }}">
+<title>{{ $title ?? 'Great brands deserve great creators.' }} — Colliva</title>
+<meta name="description" content="{{ $description ?? 'Discover local influencers and UGC creators in Yamunanagar, Jagadhri and across Haryana. Find your creative partner on Colliva.' }}">
 <link rel="canonical" href="{{ url()->current() }}">
-<meta property="og:title" content="{{ $title ?? 'Find your kind of creator' }} — Shoutly">
+<meta property="og:title" content="{{ $title ?? 'Discover your next creative partner' }} — Colliva">
 <meta property="og:description" content="Discover local talent. Create something extraordinary.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{ url()->current() }}">
@@ -18,37 +18,44 @@
 </head>
 <body class="marketplace antialiased">
 <a class="skip-link" href="#main">Skip to content</a>
-<header class="site-header" x-data="{ open: false }">
- <a class="wordmark" href="{{ route('home') }}" aria-label="Shoutly home">
-<span class="brand-mark">s<span>✳</span>
-</span>shoutly<span class="brand-dot">.</span>
-</a>
- <nav class="desktop-nav" aria-label="Main">
-<a href="{{ route('creators') }}">Explore creators</a>
-<a href="{{ route('home') }}#how-it-works">How it works</a>
-<a href="{{ route('home') }}#for-brands">For brands</a>
-<a href="{{ route('home') }}#for-creators">For creators</a>
-</nav>
- <div class="nav-actions">@auth <a class="text-link" href="{{ route('dashboard') }}">My workspace <x-market-icon name="arrow-up-right" />
-</a> @else <a class="login-link" href="{{ route('login') }}">Log in</a>
-<a class="button button-dark button-small" href="{{ route('register',['role'=>'creator']) }}">Join as creator <x-market-icon name="arrow-up-right" />
-</a> @endauth <button class="menu-toggle" @click="open = !open" :aria-expanded="open" aria-label="Toggle menu">
-<x-market-icon name="menu" />
-</button>
-</div>
- <nav class="mobile-nav" x-cloak x-show="open" @keydown.escape.window="open = false" aria-label="Mobile">
-<a href="{{ route('creators') }}">Explore creators</a>
-<a href="{{ route('home') }}#how-it-works">How it works</a>
-<a href="{{ route('login') }}">Log in</a>
-<a href="{{ route('register',['role'=>'brand']) }}">Join as brand</a>
-</nav>
+<header class="site-header" x-data>
+    <a class="wordmark" href="{{ route('home') }}" aria-label="Colliva home">colliva<span class="brand-dot">.</span></a>
+    <nav class="desktop-nav" aria-label="Main">
+        <a href="{{ route('creators') }}">Discover Creators</a>
+        <a href="{{ route('home') }}#how-it-works">How It Works</a>
+        <a href="{{ route('home') }}#for-brands">For Brands</a>
+        <a href="{{ route('home') }}#for-creators">For Creators</a>
+    </nav>
+    <div class="nav-actions">
+        @auth
+            <x-colliva-button :href="route('dashboard')" variant="outline" :small="true">My Workspace</x-colliva-button>
+        @else
+            <a class="login-link" href="{{ route('login') }}">Sign In</a>
+            <x-colliva-button :href="route('register')" :small="true">Get Started</x-colliva-button>
+        @endauth
+        <button type="button" class="menu-toggle icon-button" @click="$refs.navigation.showModal()" aria-label="Open navigation" aria-haspopup="dialog"><x-market-icon name="menu" /></button>
+    </div>
+    <x-colliva-drawer name="navigation" title="Navigation">
+        <nav class="drawer-links" aria-label="Mobile">
+            <a href="{{ route('creators') }}">Discover Creators</a>
+            <a href="{{ route('home') }}#how-it-works" @click="$refs.navigation.close()">How It Works</a>
+            <a href="{{ route('home') }}#for-brands" @click="$refs.navigation.close()">For Brands</a>
+            <a href="{{ route('home') }}#for-creators" @click="$refs.navigation.close()">For Creators</a>
+            @auth
+                <a href="{{ route('dashboard') }}" @if(request()->routeIs('dashboard')) aria-current="page" @endif>My Workspace</a>
+            @else
+                <a href="{{ route('login') }}">Sign In</a>
+                <x-colliva-button :href="route('register')">Get Started</x-colliva-button>
+            @endauth
+        </nav>
+    </x-colliva-drawer>
 </header>
 @auth
 <nav class="workspace-nav" aria-label="Workspace">
-<a href="{{ route('dashboard') }}">Overview</a>@if(auth()->user()->role === 'creator')<a href="{{ route('creator.studio') }}">My creator studio</a>@elseif(auth()->user()->role === 'brand')<a href="{{ route('brand.workspace') }}">Business & saved creators</a>
-<a href="{{ route('creators') }}">Discover creators</a>@else<a href="{{ route('filament.admin.pages.dashboard') }}">Administration</a>@endif<a href="{{ route('campaigns') }}">Campaigns</a>
-<a href="{{ route('collaborations') }}">Collaborations & notifications</a>
-<a href="{{ route('profile.edit') }}">Settings</a>
+<a href="{{ route('dashboard') }}" @if(request()->routeIs('dashboard')) aria-current="page" @endif>Overview</a>@if(auth()->user()->role === 'creator')<a href="{{ route('creator.studio') }}" @if(request()->routeIs('creator.studio')) aria-current="page" @endif>My creator studio</a>@elseif(auth()->user()->role === 'brand')<a href="{{ route('brand.workspace') }}" @if(request()->routeIs('brand.workspace')) aria-current="page" @endif>Business & saved creators</a>
+<a href="{{ route('creators') }}">Discover creators</a>@else<a href="{{ route('filament.admin.pages.dashboard') }}">Administration</a>@endif<a href="{{ route('campaigns') }}" @if(request()->routeIs('campaigns')) aria-current="page" @endif>Campaigns</a>
+<a href="{{ route('collaborations') }}" @if(request()->routeIs('collaborations')) aria-current="page" @endif>Collaborations & notifications</a>
+<a href="{{ route('profile.edit') }}" @if(request()->routeIs('profile.edit')) aria-current="page" @endif>Settings</a>
 <form action="{{ route('logout') }}" method="post">@csrf<button>Log out</button>
 </form>
 </nav>
@@ -57,13 +64,13 @@
 <footer class="site-footer">
 <div class="footer-top">
 <div>
-<a class="wordmark" href="{{ route('home') }}">shoutly<span class="brand-dot">.</span>
+<a class="wordmark" href="{{ route('home') }}">colliva<span class="brand-dot">.</span>
 </a>
-<p>Small cities. Big creative energy.<br>Made for connections that mean more.</p>
+<p>Great brands. Original creators.<br>A better place to create together.</p>
 </div>
 <div>
 <span class="eyebrow">DISCOVER</span>
-<a href="{{ route('creators') }}">Explore creators</a>
+<a href="{{ route('creators') }}">Discover creators</a>
 <a href="{{ route('creators',['city'=>'yamunanagar']) }}">Yamunanagar</a>
 <a href="{{ route('creators',['city'=>'jagadhri']) }}">Jagadhri</a>
 </div>
@@ -75,16 +82,17 @@
 </div>
 <div class="footer-note">
 <span class="location-dot">
-</span> ROOTED IN HARYANA<br>
+</span> STARTING IN HARYANA<br>
 <span>Open to extraordinary possibilities.</span>
 </div>
 </div>
 <div class="footer-bottom">
-<span>© {{ date('Y') }} Shoutly. All rights reserved.</span>
+<span>© {{ date('Y') }} Colliva. All rights reserved.</span>
 <span>Real people. Original work. Local impact.</span>
 <a href="{{ route('home') }}#main">Back to top ↑</a>
 </div>
 </footer>
 @livewireScripts
+@fluxScripts
 </body>
 </html>

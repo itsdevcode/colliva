@@ -24,7 +24,7 @@ class MarketplaceUpdate extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)->subject('Your Shoutly workspace')->line($this->message)->action('Open workspace', route('collaborations'));
+        return (new MailMessage)->subject('Your Colliva workspace')->line($this->message)->action('Open workspace', route('collaborations'));
     }
 
     /** @return array{message: string} */

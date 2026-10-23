@@ -1,12 +1,12 @@
 <x-layouts::marketplace title="Your workspace">
 <div class="container section workspace-page">
-<span class="eyebrow">YOUR NEXT CHAPTER STARTS HERE</span>
+<span class="eyebrow">YOUR WORKSPACE</span>
 <h1>Welcome back, <span class="serif-word">{{ auth()->user()->name }}.</span>
 </h1>
-<p class="quiet" style="margin-top:15px">A little organisation. A lot more room to create.</p>@if($profile)<div class="workspace-card" style="margin-top:30px">
+<p class="quiet" style="margin-top:15px">Your profile, opportunities, and collaborations. All in one place.</p>@if($profile)<div class="workspace-card" style="margin-top:30px">
 <span class="eyebrow">{{ auth()->user()->role === 'creator' ? 'PROFILE PUBLICATION' : 'YOUR BUSINESS' }}</span>
 <h2>{{ $profile->display_name ?? $profile->company_name }}</h2>@if(auth()->user()->role === 'creator')<span class="status-badge">{{ $profile->status }}</span>
-<p style="margin-top:15px">{{ $profile->moderation_note ?? 'Complete your profile and submit it for review. Only approved, consenting profiles appear in discovery.' }}</p>@endif</div>@else<div class="notice" style="background:#f0ebff;margin-top:30px">Your profile is waiting for its first chapter. Set it up below to get started.</div>@endif<div class="dashboard-metrics">@foreach($metrics as $label=>$value)<div>
+<p style="margin-top:15px">{{ $profile->moderation_note ?? 'Complete your profile and submit it for review. Only approved, consenting profiles appear in discovery.' }}</p>@endif</div>@else<div class="notice notice-neutral" style="margin-top:32px">Your profile is waiting for its first chapter. Set it up below to get started.</div>@endif<div class="dashboard-metrics">@foreach($metrics as $label=>$value)<div>
 <strong>{{ $value }}</strong>
 <span>{{ $label }}</span>
 </div>@endforeach</div>
@@ -33,7 +33,7 @@
 <p>Briefs, agreements, deliverables and notifications, all in one place.</p>
 </a>
 </div>
-<a class="text-link" href="{{ route('profile.edit') }}">Account settings & deletion <x-market-icon name="arrow-up-right"/>
+<a class="text-link" href="{{ route('profile.edit') }}">Account settings <x-market-icon name="arrow-up-right"/>
 </a>
 </div>
 </x-layouts::marketplace>
