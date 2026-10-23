@@ -65,7 +65,7 @@ Visual review artifacts are local, ignored files under `storage/framework/testin
 
 - Production build: `npm run build` passed. Existing optional Fontaine fallback notice remains; no package was added.
 - Marketplace coverage: 44 passed, 1 PostgreSQL-specific skip under SQLite, 213 assertions.
-- Full `composer ci:check`: Pint and PHPStan passed; 78 tests passed, 1 PostgreSQL-specific skip, 296 assertions under SQLite.
+- Full `composer ci:check` on PostgreSQL: Pint and PHPStan passed; all 79 tests passed with 297 assertions. SQLite also passed with 78 tests, one PostgreSQL-specific skip and 296 assertions.
 - Chrome public review at 375/768/1024/1440px: home, discovery, registration and login; no horizontal overflow or JavaScript exceptions. Filter sheet confirmed modal, focus inside, and Escape close.
 - Chrome workspace review at all four widths: creator overview/studio/campaigns/collaborations/settings and brand overview/business/campaigns/collaborations; no horizontal overflow or JavaScript exceptions in rendered fixture screens.
 - Live Livewire interaction review: platform selection updates both controls and URL, reset clears both controls and URL while retaining the open dialog, and closing restores focus to the trigger.
