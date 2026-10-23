@@ -1,0 +1,37 @@
+PHPUnit 12.5.33 by Sebastian Bergmann and contributors.
+Available tests:
+ - P\Tests\Unit\ExampleTest::__pest_evaluable_that_true_is_true
+ - P\Tests\Feature\Auth\AuthenticationTest::__pest_evaluable_login_screen_can_be_rendered
+ - P\Tests\Feature\Auth\AuthenticationTest::__pest_evaluable_users_can_authenticate_using_the_login_screen
+ - P\Tests\Feature\Auth\AuthenticationTest::__pest_evaluable_users_can_not_authenticate_with_invalid_password
+ - P\Tests\Feature\Auth\AuthenticationTest::__pest_evaluable_users_with_two_factor_enabled_are_redirected_to_two_factor_challenge
+ - P\Tests\Feature\Auth\AuthenticationTest::__pest_evaluable_users_can_logout
+ - P\Tests\Feature\Auth\EmailVerificationTest::__pest_evaluable_email_verification_screen_can_be_rendered
+ - P\Tests\Feature\Auth\EmailVerificationTest::__pest_evaluable_unverified_users_are_redirected_to_the_email_verification_prompt
+ - P\Tests\Feature\Auth\EmailVerificationTest::__pest_evaluable_email_can_be_verified
+ - P\Tests\Feature\Auth\EmailVerificationTest::__pest_evaluable_email_is_not_verified_with_invalid_hash
+ - P\Tests\Feature\Auth\EmailVerificationTest::__pest_evaluable_already_verified_user_visiting_verification_link_is_redirected_without_firing_event_again
+ - P\Tests\Feature\Auth\PasswordConfirmationTest::__pest_evaluable_confirm_password_screen_can_be_rendered
+ - P\Tests\Feature\Auth\PasswordResetTest::__pest_evaluable_reset_password_link_screen_can_be_rendered
+ - P\Tests\Feature\Auth\PasswordResetTest::__pest_evaluable_reset_password_link_can_be_requested
+ - P\Tests\Feature\Auth\PasswordResetTest::__pest_evaluable_reset_password_screen_can_be_rendered
+ - P\Tests\Feature\Auth\PasswordResetTest::__pest_evaluable_password_can_be_reset_with_valid_token
+ - P\Tests\Feature\Auth\RegistrationTest::__pest_evaluable_registration_screen_can_be_rendered
+ - P\Tests\Feature\Auth\RegistrationTest::__pest_evaluable_new_users_can_register
+ - P\Tests\Feature\Auth\TwoFactorChallengeTest::__pest_evaluable_two_factor_challenge_redirects_to_login_when_not_authenticated
+ - P\Tests\Feature\Auth\TwoFactorChallengeTest::__pest_evaluable_two_factor_challenge_can_be_rendered
+ - P\Tests\Feature\DashboardTest::__pest_evaluable_guests_are_redirected_to_the_login_page
+ - P\Tests\Feature\DashboardTest::__pest_evaluable_authenticated_users_can_visit_the_dashboard
+ - P\Tests\Feature\ExampleTest::__pest_evaluable_returns_a_successful_response
+ - P\Tests\Feature\MarketplaceTest::__pest_evaluable_example
+ - P\Tests\Feature\Settings\ProfileUpdateTest::__pest_evaluable_profile_page_is_displayed
+ - P\Tests\Feature\Settings\ProfileUpdateTest::__pest_evaluable_profile_information_can_be_updated
+ - P\Tests\Feature\Settings\ProfileUpdateTest::__pest_evaluable_email_verification_status_is_unchanged_when_email_address_is_unchanged
+ - P\Tests\Feature\Settings\ProfileUpdateTest::__pest_evaluable_user_can_delete_their_account
+ - P\Tests\Feature\Settings\ProfileUpdateTest::__pest_evaluable_correct_password_must_be_provided_to_delete_account
+ - P\Tests\Feature\Settings\SecurityTest::__pest_evaluable_security_settings_page_can_be_rendered
+ - P\Tests\Feature\Settings\SecurityTest::__pest_evaluable_security_settings_page_requires_password_confirmation_when_enabled
+ - P\Tests\Feature\Settings\SecurityTest::__pest_evaluable_security_settings_page_renders_without_two_factor_when_feature_is_disabled
+ - P\Tests\Feature\Settings\SecurityTest::__pest_evaluable_two_factor_authentication_disabled_when_confirmation_abandoned_between_requests
+ - P\Tests\Feature\Settings\SecurityTest::__pest_evaluable_password_can_be_updated
+ - P\Tests\Feature\Settings\SecurityTest::__pest_evaluable_correct_password_must_be_provided_to_update_password
