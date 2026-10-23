@@ -1,0 +1,5 @@
+@props(['name' => 'arrow-up-right'])
+@php($paths = [
+'arrow-up-right'=>'M7 17 17 7M7 7h10v10', 'arrow-right'=>'M5 12h14m-6-6 6 6-6 6', 'search'=>'m21 21-4.34-4.34M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0', 'pin'=>'M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0ZM12 7v6m-3-3h6', 'check'=>'m5 12 4 4L19 6', 'menu'=>'M4 6h16M4 12h16M4 18h16', 'sparkles'=>'m12 3 3 6 6 3-6 3-3 6-3-6-6-3 6-3 3-6', 'heart'=>'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z', 'camera'=>'M14 4h-4L8 7H3v13h18V7h-5l-2-3ZM16 13a4 4 0 1 1-8 0 4 4 0 0 1 8 0', 'filter'=>'M4 7h16M7 12h10m-7 5h4', 'globe'=>'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM3 12h18M12 3c5 5 5 13 0 18-5-5-5-13 0-18', 'play'=>'m9 5 12 7-12 7V5', 'briefcase'=>'M8 7V3h8v4M3 7h18v14H3V7Zm0 5 9 4 9-4', 'shield'=>'m12 3 9 4v5c0 5-9 10-9 10S3 17 3 12V7l9-4Z m-4 9 3 3 5-6'
+])
+<svg {{ $attributes->merge(['class'=>'market-icon']) }} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{ $paths[$name] ?? $paths['sparkles'] }}"/></svg>

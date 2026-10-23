@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="light">
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-white antialiased dark:bg-linear-to-b dark:from-neutral-950 dark:to-neutral-900">
+    <body class="min-h-screen bg-[#fafaf8] antialiased dark:bg-zinc-950">
         <div class="bg-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
-            <div class="flex w-full max-w-sm flex-col gap-2">
+            <div class="flex w-full max-w-md flex-col gap-7 rounded-2xl border border-zinc-200 bg-white p-8 shadow-xs dark:border-zinc-800 dark:bg-zinc-900">
                 <a href="{{ route('home') }}" class="flex flex-col items-center gap-2 font-medium" wire:navigate>
                     <span class="flex h-9 w-9 mb-1 items-center justify-center rounded-md">
                         <x-app-logo-icon class="size-9 fill-current text-black dark:text-white" />
                     </span>
-                    <span class="sr-only">{{ config('app.name', 'Laravel') }}</span>
+                    <span class="text-2xl font-semibold tracking-tight">{{ config('app.name', 'Shoutly') }}</span>
                 </a>
                 <div class="flex flex-col gap-6">
                     {{ $slot }}

@@ -3,22 +3,14 @@
 namespace Database\Factories;
 
 use App\Models\Collaboration;
+use App\Models\CollaborationRequest;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<Collaboration>
- */
+/** @extends Factory<Collaboration> */
 class CollaborationFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
-        return [
-            //
-        ];
+        return ['collaboration_request_id' => CollaborationRequest::factory()->state(['status' => 'accepted', 'creator_confirmed_at' => now()])];
     }
 }

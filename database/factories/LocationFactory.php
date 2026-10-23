@@ -5,20 +5,11 @@ namespace Database\Factories;
 use App\Models\Location;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<Location>
- */
+/** @extends Factory<Location> */
 class LocationFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
-        return [
-            //
-        ];
+        return ['name' => fake()->city(), 'slug' => fake()->unique()->slug(), 'state' => 'Haryana', 'country' => 'IN'];
     }
 }

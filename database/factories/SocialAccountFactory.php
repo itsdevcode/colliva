@@ -2,23 +2,15 @@
 
 namespace Database\Factories;
 
+use App\Models\CreatorProfile;
 use App\Models\SocialAccount;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<SocialAccount>
- */
+/** @extends Factory<SocialAccount> */
 class SocialAccountFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
-        return [
-            //
-        ];
+        return ['creator_profile_id' => CreatorProfile::factory(), 'platform' => 'instagram', 'url' => 'https://www.instagram.com/example', 'followers' => 1000, 'metrics_reported_at' => now()];
     }
 }

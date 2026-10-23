@@ -3,10 +3,14 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -30,27 +34,32 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  */
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
-class User extends Authenticatable implements MustVerifyEmail, PasskeyUser, \Filament\Models\Contracts\FilamentUser
+class User extends Authenticatable implements FilamentUser, MustVerifyEmail, PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
 
-    public function canAccessPanel(\Filament\Panel $panel): bool
+    protected $attributes = ['role' => 'creator'];
+
+    public function canAccessPanel(Panel $panel): bool
     {
         return $this->role === 'admin' && $this->hasVerifiedEmail();
     }
 
-    public function creatorProfile(): \Illuminate\Database\Eloquent\Relations\HasOne
+    /** @return HasOne<CreatorProfile, $this> */
+    public function creatorProfile(): HasOne
     {
         return $this->hasOne(CreatorProfile::class);
     }
 
-    public function brandProfile(): \Illuminate\Database\Eloquent\Relations\HasOne
+    /** @return HasOne<BrandProfile, $this> */
+    public function brandProfile(): HasOne
     {
         return $this->hasOne(BrandProfile::class);
     }
 
-    public function savedCreators(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    /** @return BelongsToMany<CreatorProfile, $this> */
+    public function savedCreators(): BelongsToMany
     {
         return $this->belongsToMany(CreatorProfile::class, 'saved_creators')->withTimestamps();
     }

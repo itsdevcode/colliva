@@ -2,23 +2,16 @@
 
 namespace Database\Factories;
 
+use App\Models\Campaign;
 use App\Models\CampaignApplication;
+use App\Models\CreatorProfile;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<CampaignApplication>
- */
+/** @extends Factory<CampaignApplication> */
 class CampaignApplicationFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
-        return [
-            //
-        ];
+        return ['campaign_id' => Campaign::factory(), 'creator_profile_id' => CreatorProfile::factory(), 'proposal' => 'I would love to create a local story for your brand.', 'quote_minor' => 250000];
     }
 }

@@ -40,3 +40,6 @@ yarn-error.log
 /boost.json
 /opencode.json
 /opencode.jsonc
+
+/storage/framework/php/
+/storage/framework/composer-cache/
