@@ -4,11 +4,19 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Http\Responses\AccountLoginResponse;
+use App\Http\Responses\AccountRegisterResponse;
+use App\Http\Responses\AccountTwoFactorLoginResponse;
+use App\Http\Responses\AccountVerifyEmailResponse;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Laravel\Fortify\Contracts\LoginResponse;
+use Laravel\Fortify\Contracts\RegisterResponse;
+use Laravel\Fortify\Contracts\TwoFactorLoginResponse;
+use Laravel\Fortify\Contracts\VerifyEmailResponse;
 use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -18,7 +26,10 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(LoginResponse::class, AccountLoginResponse::class);
+        $this->app->singleton(RegisterResponse::class, AccountRegisterResponse::class);
+        $this->app->singleton(TwoFactorLoginResponse::class, AccountTwoFactorLoginResponse::class);
+        $this->app->singleton(VerifyEmailResponse::class, AccountVerifyEmailResponse::class);
     }
 
     /**
@@ -49,7 +60,7 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::verifyEmailView(fn () => view('livewire.auth.verify-email'));
         Fortify::twoFactorChallengeView(fn () => view('livewire.auth.two-factor-challenge'));
         Fortify::confirmPasswordView(fn () => view('livewire.auth.confirm-password'));
-        Fortify::registerView(fn () => view('livewire.auth.register'));
+        Fortify::registerView(fn () => view('get-started'));
         Fortify::resetPasswordView(fn () => view('livewire.auth.reset-password'));
         Fortify::requestPasswordResetLinkView(fn () => view('livewire.auth.forgot-password'));
     }

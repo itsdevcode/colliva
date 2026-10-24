@@ -73,7 +73,7 @@ class CreatorDiscovery extends Component
     public function saveCreator(int $id): void
     {
         $user = auth()->user();
-        abort_unless($user && $user->role === 'brand' && $user->hasVerifiedEmail(), 403);
+        abort_unless($user && in_array($user->role, ['brand', 'customer'], true) && $user->hasVerifiedEmail(), 403);
         $creator = CreatorProfile::publiclyVisible()->findOrFail($id);
         $user->savedCreators()->syncWithoutDetaching([$creator->id]);
         session()->flash('status', 'Creator saved to your workspace.');

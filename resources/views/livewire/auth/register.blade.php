@@ -1,20 +1,18 @@
-<x-layouts::auth :title="__('Register')">
+<x-layouts::auth :title="'Join as '.ucfirst($role)">
     <div class="flex flex-col gap-6">
-        <x-auth-header :title="__('Create an account')" :description="__('Enter your details below to create your account')" />
+        <x-auth-header :title="'Your next chapter starts here.'" :description="'Create your '.ucfirst($role).' account and find your place on Colliva.'" />
 
+        <a class="text-sm text-[#6d4aff]" href="{{ route('get-started') }}">← Choose a different account type</a>
+        @if($errors->any())<div role="alert" class="rounded-xl bg-red-50 p-4 text-sm text-red-800"><p>Please check your details.</p><ul class="list-inside list-disc">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
-        <form method="POST" action="{{ route('register.store') }}" class="flex flex-col gap-6">
+        <form method="POST" action="{{ route('signup.store', $role) }}" class="flex flex-col gap-6">
             @csrf
-            <flux:select name="role" label="I’m joining as">
-                <option value="creator" @selected(old('role', request('role')) !== 'brand')>Creator — showcase my work</option>
-                <option value="brand" @selected(old('role', request('role')) === 'brand')>Brand — find my next collaborator</option>
-            </flux:select>
             <!-- Name -->
             <flux:input
                 name="name"
-                :label="__('Name')"
+                :label="$role === 'brand' ? 'Contact person name' : 'Full name'"
                 :value="old('name')"
                 type="text"
                 required
@@ -26,7 +24,7 @@
             <!-- Email Address -->
             <flux:input
                 name="email"
-                :label="__('Email address')"
+                :label="$role === 'brand' ? 'Work email' : 'Email'"
                 :value="old('email')"
                 type="email"
                 required
@@ -34,6 +32,22 @@
                 placeholder="email@example.com"
             />
 
+            @if($role === 'brand')
+                <flux:input name="company_name" label="Brand / business name" :value="old('company_name')" required maxlength="150" autocomplete="organization" />
+                <flux:input name="business_category" label="Business category" :value="old('business_category')" required maxlength="150" placeholder="e.g. Food & hospitality" />
+            @endif
+            @if($role !== 'customer')
+                <flux:select name="city" label="City" required>
+                    <option value="">Choose your city</option>
+                    @foreach($locations as $location)<option value="{{ $location->id }}" @selected((string) old('city') === (string) $location->id)>{{ $location->name }}</option>@endforeach
+                </flux:select>
+            @endif
+            @if($role === 'creator')
+                <flux:select name="category" label="Primary creator category" required>
+                    <option value="">Choose your category</option>
+                    @foreach($categories as $category)<option value="{{ $category->id }}" @selected((string) old('category') === (string) $category->id)>{{ $category->name }}</option>@endforeach
+                </flux:select>
+            @endif
             <!-- Password -->
             <flux:input
                 name="password"
@@ -60,7 +74,7 @@
 
             <div class="flex items-center justify-end">
                 <flux:button type="submit" variant="primary" class="w-full" data-test="register-user-button">
-                    {{ __('Create account') }}
+                    Create {{ ucfirst($role) }} Account
                 </flux:button>
             </div>
         </form>

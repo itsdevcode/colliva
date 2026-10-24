@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\CollaborationRequest;
 use App\Models\CreatorProfile;
 use App\Models\Location;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class MarketplaceController extends Controller
@@ -23,9 +24,12 @@ class MarketplaceController extends Controller
         return view('creator', compact('creator'));
     }
 
-    public function dashboard(): View
+    public function dashboard(): View|RedirectResponse
     {
         $user = auth()->user();
+        if ($user->needsOnboarding()) {
+            return redirect()->route($user->role.'.onboarding');
+        }
         $profile = $user->role === 'creator' ? $user->creatorProfile : $user->brandProfile;
 
         $offers = CollaborationRequest::where(fn ($q) => $q->whereHas('brandProfile', fn ($b) => $b->where('user_id', $user->id))->orWhereHas('creatorProfile', fn ($c) => $c->where('user_id', $user->id)));
@@ -38,6 +42,8 @@ class MarketplaceController extends Controller
             $metrics['Applications submitted'] = CampaignApplication::whereHas('creatorProfile', fn ($q) => $q->where('user_id', $user->id))->count();
         }
 
-        return view('dashboard', compact('profile', 'metrics'));
+        $profileCompletion = $profile instanceof CreatorProfile ? (int) round(collect([$profile->bio, $profile->photo_path, $profile->location_id, $profile->category_id, $profile->portfolioItems()->exists(), $profile->servicePackages()->exists(), $profile->socialAccounts()->exists()])->filter()->count() / 7 * 100) : null;
+
+        return view('dashboard', compact('profile', 'metrics', 'profileCompletion'));
     }
 }

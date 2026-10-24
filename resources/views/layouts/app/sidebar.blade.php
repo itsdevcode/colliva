@@ -26,6 +26,8 @@
                 <flux:sidebar.item :href="route('creator.studio')">My creator studio</flux:sidebar.item>
                 @elseif(auth()->user()->role === 'brand')
                 <flux:sidebar.item :href="route('brand.workspace')">Brand workspace</flux:sidebar.item>
+                @elseif(auth()->user()->role === 'customer')
+                <flux:sidebar.item :href="route('customer.dashboard').'#saved-creators'">Saved creators</flux:sidebar.item>
                 @endif
                 <flux:sidebar.item :href="route('collaborations')">Collaborations</flux:sidebar.item>
             </flux:sidebar.nav>

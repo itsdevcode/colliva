@@ -9,7 +9,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-#[Fillable(['brand_profile_id', 'creator_profile_id', 'campaign_application_id', 'title', 'scope', 'price_minor', 'delivery_deadline'])]
+/**
+ * @property CustomerProfile|null $customerProfile
+ * @property BrandProfile|null $brandProfile
+ */
+#[Fillable(['brand_profile_id', 'customer_profile_id', 'creator_profile_id', 'campaign_application_id', 'title', 'scope', 'price_minor', 'delivery_deadline'])]
 class CollaborationRequest extends Model
 {
     /** @use HasFactory<CollaborationRequestFactory> */
@@ -31,6 +35,21 @@ class CollaborationRequest extends Model
     public function collaboration(): HasOne
     {
         return $this->hasOne(Collaboration::class);
+    }
+
+    /** @return BelongsTo<CustomerProfile, $this> */
+    public function customerProfile(): BelongsTo
+    {
+        return $this->belongsTo(CustomerProfile::class);
+    }
+
+    public function hirer(): User
+    {
+        if ($this->customer_profile_id !== null) {
+            return $this->customerProfile->user;
+        }
+
+        return $this->brandProfile->user;
     }
 
     protected function casts(): array

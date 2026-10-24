@@ -49,14 +49,14 @@
             <div class="market-launch">
                 <span class="launch-icon"><x-market-icon name="sparkles" /></span>
                 <div><h2>The first voices start with you.</h2><p>We’re building our local creator community. Share your work and be ready for your next opportunity.</p></div>
-                <x-colliva-button :href="route('register', ['role' => 'creator'])" variant="outline">Join as Creator <x-market-icon name="arrow-right" /></x-colliva-button>
+                <x-colliva-button :href="route('for-creators')" variant="outline">Join as Creator <x-market-icon name="arrow-right" /></x-colliva-button>
             </div>
         @endif
     </section>
 
     <section class="market-workflow" id="how-it-works">
         <div class="container">
-            <div class="market-section-heading"><div><span class="eyebrow">LESS SEARCHING. MORE COLLABORATING.</span><h2>From discovery to delivery.<br>All in one place.</h2></div><a class="button button-outline" href="{{ route('register', ['role' => 'brand']) }}">Get Started <x-market-icon name="arrow-right" /></a></div>
+            <div class="market-section-heading"><div><span class="eyebrow">LESS SEARCHING. MORE COLLABORATING.</span><h2>From discovery to delivery.<br>All in one place.</h2></div><a class="button button-outline" href="{{ route('for-brands') }}">Get Started <x-market-icon name="arrow-right" /></a></div>
             <div class="market-workflow-grid">
                 @foreach([['01', 'search', 'Find your fit', 'Explore creators by platform, category, city, and budget. Look through their work before you reach out.'], ['02', 'briefcase', 'Make the brief yours', 'Share your idea, agree on the deliverables, and set expectations together. Keep the details clear.'], ['03', 'check', 'Bring it to life', 'Review submitted content, request revisions, and manage your collaboration in your workspace.']] as [$number, $icon, $heading, $body])
                     <article><div class="workflow-card-top"><span class="workflow-icon"><x-market-icon :name="$icon" /></span><span>{{ $number }}</span></div><h3>{{ $heading }}</h3><p>{{ $body }}</p></article>
@@ -66,12 +66,12 @@
     </section>
 
     <section class="container market-brand-section" id="for-brands">
-        <div class="market-brand-copy"><span class="eyebrow">FOR BRANDS &amp; LOCAL BUSINESSES</span><h2>Your next campaign starts<br>with the right connection.</h2><p>Find people who understand your audience. Compare their work, keep a shortlist, and collaborate with a clear plan.</p><ul><li><x-market-icon name="check" />Original portfolios and transparent service pricing</li><li><x-market-icon name="check" />Saved creators, campaign briefs, and applications</li><li><x-market-icon name="check" />Agreements and deliverables in one workspace</li></ul><x-colliva-button :href="route('register', ['role' => 'brand'])">Find Your Creative Partner <x-market-icon name="arrow-right" /></x-colliva-button></div>
+        <div class="market-brand-copy"><span class="eyebrow">FOR BRANDS &amp; LOCAL BUSINESSES</span><h2>Your next campaign starts<br>with the right connection.</h2><p>Find people who understand your audience. Compare their work, keep a shortlist, and collaborate with a clear plan.</p><ul><li><x-market-icon name="check" />Original portfolios and transparent service pricing</li><li><x-market-icon name="check" />Saved creators, campaign briefs, and applications</li><li><x-market-icon name="check" />Agreements and deliverables in one workspace</li></ul><x-colliva-button :href="route('for-brands')">Find Your Creative Partner <x-market-icon name="arrow-right" /></x-colliva-button></div>
         <div class="market-workspace-preview" aria-label="Colliva collaboration workflow"><div class="preview-top"><span class="wordmark">colliva<span class="brand-dot">.</span></span><span class="status-badge">Your workspace</span></div><h3>A little clarity.<br>A lot more possibility.</h3><div class="preview-step"><span><x-market-icon name="search" /></span><div><strong>Discover &amp; shortlist</strong><small>Find the right style and audience.</small></div><x-market-icon name="check" /></div><div class="preview-step"><span><x-market-icon name="briefcase" /></span><div><strong>Brief &amp; agree</strong><small>Get the important details in place.</small></div><x-market-icon name="check" /></div><div class="preview-step"><span><x-market-icon name="camera" /></span><div><strong>Create &amp; review</strong><small>Keep your deliverables together.</small></div><x-market-icon name="check" /></div><p>Discovery. Briefs. Deliverables. Connected.</p></div>
     </section>
 
     <section class="container market-creator-section" id="for-creators">
-        <div><span class="eyebrow">FOR THE CREATIVELY INDEPENDENT</span><h2>You make the content.<br>We make the connections.</h2><p>Build your portfolio, set your rates, and get discovered by brands looking for a perspective like yours.</p><x-colliva-button :href="route('register', ['role' => 'creator'])" variant="white">Create Your Profile <x-market-icon name="arrow-right" /></x-colliva-button></div>
+        <div><span class="eyebrow">FOR THE CREATIVELY INDEPENDENT</span><h2>You make the content.<br>We make the connections.</h2><p>Build your portfolio, set your rates, and get discovered by brands looking for a perspective like yours.</p><x-colliva-button :href="route('for-creators')" variant="white">Create Your Profile <x-market-icon name="arrow-right" /></x-colliva-button></div>
         <div class="creator-path"><span><x-market-icon name="camera" />Your portfolio</span><span><x-market-icon name="briefcase" />Your services</span><span><x-market-icon name="heart" />Your next collaboration</span><p>Your work. Your rates. Your creative identity.</p></div>
     </section>
 

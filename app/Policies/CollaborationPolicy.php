@@ -9,7 +9,7 @@ class CollaborationPolicy
 {
     public function view(User $user, Collaboration $collaboration): bool
     {
-        return in_array($user->id, [$collaboration->request->brandProfile->user_id, $collaboration->request->creatorProfile->user_id], true);
+        return in_array($user->id, [$collaboration->request->hirer()->id, $collaboration->request->creatorProfile->user_id], true);
     }
 
     public function submit(User $user, Collaboration $collaboration): bool
@@ -19,7 +19,7 @@ class CollaborationPolicy
 
     public function review(User $user, Collaboration $collaboration): bool
     {
-        return $user->role === 'brand' && $collaboration->request->brandProfile->user_id === $user->id;
+        return in_array($user->role, ['brand', 'customer'], true) && $collaboration->request->hirer()->id === $user->id;
     }
 
     public function viewAny(User $user): bool

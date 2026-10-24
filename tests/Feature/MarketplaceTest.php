@@ -43,7 +43,7 @@ test('public pages render without fabricated listings', function () {
 
 test('registration accepts creator and brand roles and rejects admin escalation', function (string $role, bool $allowed) {
     Notification::fake();
-    $response = $this->post(route('register.store'), ['name' => 'New Member', 'email' => 'new@example.com', 'password' => 'password', 'password_confirmation' => 'password', 'role' => $role]);
+    $response = $this->post(route('register.store'), ['name' => 'New Member', 'email' => 'new@example.com', 'password' => 'password', 'password_confirmation' => 'password', 'role' => $role, 'city' => Location::factory()->create()->id, 'category' => Category::factory()->create()->id, 'company_name' => 'Local Business', 'business_category' => 'Retail']);
     if ($allowed) {
         $response->assertSessionHasNoErrors();
         $this->assertDatabaseHas('users', ['email' => 'new@example.com', 'role' => $role]);
@@ -65,7 +65,7 @@ test('workspace routes require verified accounts and the appropriate role', func
     $this->actingAs($creator)->get(route('brand.workspace'))->assertForbidden();
     $this->actingAs($creator)->get(route('creator.studio'))->assertOk();
     $this->actingAs($brand)->get(route('brand.workspace'))->assertOk();
-    $this->actingAs($creator)->get(route('dashboard'))->assertOk();
+    $this->actingAs($creator)->get(route('dashboard'))->assertRedirect(route('creator.dashboard'));
 });
 
 test('discovery filters actual approved consenting profiles and excludes hidden records', function () {

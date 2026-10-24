@@ -20,6 +20,10 @@ use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
 /**
+ * @property 'creator'|'brand'|'customer'|'admin' $role
+ * @property CreatorProfile|null $creatorProfile
+ * @property BrandProfile|null $brandProfile
+ * @property CustomerProfile|null $customerProfile
  * @property int $id
  * @property string $name
  * @property string $email
@@ -56,6 +60,31 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Pas
     public function brandProfile(): HasOne
     {
         return $this->hasOne(BrandProfile::class);
+    }
+
+    /** @return HasOne<CustomerProfile, $this> */
+    public function customerProfile(): HasOne
+    {
+        return $this->hasOne(CustomerProfile::class);
+    }
+
+    public function dashboardRoute(): string
+    {
+        return match ($this->role) {
+            'creator' => 'creator.dashboard',
+            'brand' => 'brand.dashboard',
+            'customer' => 'customer.dashboard',
+            'admin' => 'filament.admin.pages.dashboard',
+        };
+    }
+
+    public function needsOnboarding(): bool
+    {
+        return match ($this->role) {
+            'creator' => ! $this->creatorProfile || ! $this->creatorProfile->bio || ! $this->creatorProfile->location_id || ! $this->creatorProfile->category_id,
+            'brand' => ! $this->brandProfile || ! $this->brandProfile->description || ! $this->brandProfile->location_id,
+            default => false,
+        };
     }
 
     /** @return BelongsToMany<CreatorProfile, $this> */

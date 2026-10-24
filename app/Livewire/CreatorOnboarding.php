@@ -12,6 +12,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
@@ -27,6 +28,7 @@ class CreatorOnboarding extends Component
     #[Locked]
     public ?int $editingPortfolioId = null;
 
+    #[Url(except: 1)]
     public int $step = 1;
 
     public string $displayName = '';
