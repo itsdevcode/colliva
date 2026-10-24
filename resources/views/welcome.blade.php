@@ -10,22 +10,7 @@
                 <x-colliva-button :href="route('creators')">Explore Creators <x-market-icon name="arrow-right" /></x-colliva-button>
                 <a class="text-link" href="{{ route('for-creators') }}">Join as Creator</a>
             </div>
-            <form class="home-search" action="{{ route('creators') }}" method="get" role="search">
-                <label class="sr-only" for="home-creator-search">Search creators by name or style</label>
-                <div class="home-search-entry flex items-center gap-2">
-                    <x-market-icon name="search" /><input id="home-creator-search" type="search" name="search" placeholder="Name or creative style" enterkeyhint="search" autocomplete="off">
-                    <button type="submit" class="icon-button" aria-label="Search creators"><x-market-icon name="arrow-right" /></button>
-                </div>
-                <div class="home-search-shortcuts">
-                    <details class="home-location"><summary><x-market-icon name="pin" />Location &amp; category</summary><div class="home-search-options grid grid-cols-1 gap-4 sm:grid-cols-3">
-                        <label>City<select name="city"><option value="">Any city</option>@foreach($locations as $location)<option value="{{ $location->slug }}">{{ $location->name }}</option>@endforeach</select></label>
-                        <label>Category<select name="category"><option value="">Any category</option>@foreach($categories as $category)<option value="{{ $category->slug }}">{{ $category->name }}</option>@endforeach</select></label>
-                        <label>Platform<select name="platform"><option value="">All platforms</option><option value="instagram">Instagram</option><option value="youtube">YouTube</option><option value="ugc">UGC</option></select></label>
-                    </div></details>
-                    <button type="submit" name="filters" value="open" class="text-link"><x-market-icon name="filter" />Filters</button>
-                </div>
-            </form>
-            <div class="market-quick-links"><span>Popular searches</span><a href="{{ route('creators', ['category' => 'fashion']) }}">Fashion</a><a href="{{ route('creators', ['category' => 'beauty']) }}">Beauty</a><a href="{{ route('creators', ['platform' => 'ugc']) }}">UGC</a><a href="{{ route('creators', ['budget' => 5000]) }}">Under ₹5,000</a><a href="{{ route('creators', ['available' => 1]) }}">Available now <x-market-icon name="arrow-up-right" /></a></div>
+            <livewire:creator-discovery :compact="true" />
         </div>
     </section>
 

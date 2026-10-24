@@ -85,6 +85,7 @@
 <a href="{{ route('for-brands') }}">For brands</a>
 <a href="{{ route('for-creators') }}">For creators</a>
 <a href="{{ route('for-customers') }}">For customers</a>
+<a href="{{ route('pricing') }}" @if(request()->routeIs('pricing')) aria-current="page" @endif>Pricing &amp; Fees</a>
 <a href="{{ route('home') }}#faq">FAQs</a>
 </div>
 <div class="footer-note">

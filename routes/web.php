@@ -9,9 +9,11 @@ use App\Livewire\CollaborationWorkspace;
 use App\Livewire\CreatorDiscovery;
 use App\Livewire\CreatorOnboarding;
 use App\Livewire\CustomerWorkspace;
+use App\Livewire\Pricing;
 use App\Models\CreatorProfile;
 use Illuminate\Support\Facades\Route;
 
+Route::livewire('/pricing', Pricing::class)->name('pricing');
 Route::view('/get-started', 'get-started')->name('get-started');
 foreach (['creator' => 'creators', 'brand' => 'brands', 'customer' => 'customers'] as $role => $plural) {
     Route::get('/for-'.$plural, [RoleLandingController::class, 'show'])->defaults('role', $role)->name('for-'.$plural);
