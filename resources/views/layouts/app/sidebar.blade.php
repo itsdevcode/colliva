@@ -91,6 +91,7 @@
         </flux:header>
 
         {{ $slot }}
+        <x-mobile-workspace-nav />
 
         @persist('toast')
             <flux:toast.group>

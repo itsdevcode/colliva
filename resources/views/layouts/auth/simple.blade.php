@@ -8,7 +8,7 @@
             <aside class="auth-story" aria-label="Colliva community">
                 <a class="wordmark" href="{{ route('home') }}">colliva<span>.</span></a>
                 <div><span class="eyebrow">A LITTLE ORIGINALITY GOES A LONG WAY</span><h2>Good people.<br>Great possibilities.</h2><p>A place for creative minds, thoughtful brands, and ideas waiting to happen.</p></div>
-                <figure><img src="{{ asset('images/creative-studio.webp') }}" alt="A sunlit creative studio with a camera and notebook" width="1200" height="800"><figcaption>Space to create. Room to grow. <span>Illustrative imagery</span></figcaption></figure>
+                <figure><x-editorial-image name="creative-studio.webp" alt="A sunlit creative studio with a camera and notebook" sizes="(min-width: 900px) 40vw, 1px" /><figcaption>Space to create. Room to grow. <span>Illustrative imagery</span></figcaption></figure>
                 <a href="{{ route('home') }}">← Back to Colliva</a>
             </aside>
             <div class="auth-panel">

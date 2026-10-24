@@ -59,8 +59,11 @@ class CreatorDiscovery extends Component
         }
     }
 
-    public function updated(): void
+    public function updated(string $property): void
     {
+        if (str_starts_with($property, 'draftFilters')) {
+            return;
+        }
         $this->resetPage();
     }
 
@@ -68,6 +71,45 @@ class CreatorDiscovery extends Component
     {
         $this->reset('search', 'city', 'category', 'platform', 'language', 'minFollowers', 'maxFollowers', 'budget', 'available', 'verified', 'sort');
         $this->resetPage();
+    }
+
+    /** @var array<string, string|bool> */
+    public array $draftFilters = [];
+
+    public function openFilters(): void
+    {
+        foreach (['city', 'category', 'platform', 'language', 'budget', 'minFollowers', 'maxFollowers', 'available', 'verified'] as $property) {
+            $this->draftFilters[$property] = $this->{$property};
+        }
+        $this->resetValidation();
+    }
+
+    public function clearDraftFilters(): void
+    {
+        $this->draftFilters = ['city' => '', 'category' => '', 'platform' => '', 'language' => '', 'budget' => '', 'minFollowers' => '', 'maxFollowers' => '', 'available' => false, 'verified' => false];
+        $this->resetValidation();
+    }
+
+    public function applyFilters(): void
+    {
+        $this->validate([
+            'draftFilters.city' => ['nullable', 'string', 'exists:locations,slug'],
+            'draftFilters.category' => ['nullable', 'string', 'exists:categories,slug'],
+            'draftFilters.platform' => ['nullable', 'in:instagram,youtube,ugc,other'],
+            'draftFilters.language' => ['nullable', 'string', 'exists:languages,slug'],
+            'draftFilters.budget' => ['nullable', 'integer', 'min:0', 'max:100000000'],
+            'draftFilters.minFollowers' => ['nullable', 'integer', 'min:0', 'max:2000000000'],
+            'draftFilters.maxFollowers' => ['nullable', 'integer', 'min:0', 'max:2000000000'],
+            'draftFilters.available' => ['required', 'boolean'],
+            'draftFilters.verified' => ['required', 'boolean'],
+        ]);
+        foreach (['city', 'category', 'platform', 'language', 'budget', 'minFollowers', 'maxFollowers'] as $property) {
+            $this->{$property} = (string) ($this->draftFilters[$property] ?? '');
+        }
+        $this->available = (bool) $this->draftFilters['available'];
+        $this->verified = (bool) $this->draftFilters['verified'];
+        $this->resetPage();
+        $this->dispatch('filters-applied');
     }
 
     public function saveCreator(int $id): void

@@ -1,12 +1,12 @@
 <x-layouts::marketplace :title="$creator->display_name.' — '.$creator->category->name" :description="Str::limit($creator->bio,155)">
-<div class="container section">
+<div class="container section public-profile-page">
 <a class="breadcrumb" href="{{ route('creators') }}">← Back to creators</a>
-<div class="profile-cover">@if($creator->cover_path)<img src="{{ Storage::disk(config('filesystems.media_disk'))->url($creator->cover_path) }}" alt="{{ $creator->display_name }}’s cover">@else<span>{{ $creator->category->name }}</span>
+<div class="profile-cover">@if($creator->cover_path)<img src="{{ Storage::disk(config('filesystems.media_disk'))->url($creator->cover_path) }}" alt="{{ $creator->display_name }}’s cover" width="1440" height="480" fetchpriority="high" decoding="async">@else<span>{{ $creator->category->name }}</span>
 <span>CREATOR PORTFOLIO</span>@endif</div>
 <div class="profile-layout">
 <div>
 <div class="profile-identity">
-<img class="profile-avatar" src="{{ Storage::disk(config('filesystems.media_disk'))->url($creator->photo_path) }}" alt="{{ $creator->display_name }}">
+<img class="profile-avatar" src="{{ Storage::disk(config('filesystems.media_disk'))->url($creator->photo_path) }}" alt="{{ $creator->display_name }}" width="120" height="120" decoding="async">
 <div>
 <span class="eyebrow">{{ $creator->location->name }}, {{ $creator->location->state }}</span>
 <h1>{{ $creator->display_name }} @if($creator->verified_at)<span class="sr-only">Verified profile</span><x-market-icon name="shield"/>@endif</h1>
@@ -15,9 +15,7 @@
 </div>
 <p class="profile-bio">{{ $creator->bio }}</p>
 <div class="benefit-tags">@foreach($creator->categories as $category)<span>{{ $category->name }}</span>@endforeach @foreach($creator->languages as $language)<span>{{ $language->name }}</span>@endforeach</div>
-<div class="social-list">@foreach($creator->socialAccounts as $social)<a class="social-account" href="{{ $social->url }}" target="_blank" rel="noopener noreferrer">
-<strong>{{ ucfirst($social->platform) }} ↗</strong>@if($social->followers !== null)<span>{{ number_format($social->followers) }} followers</span>@endif@if($social->average_views !== null)<span>{{ number_format($social->average_views) }} average views</span>@endif<small>{{ $social->metrics_verified_at ? 'Metrics verified '.$social->metrics_verified_at->format('d M Y') : 'Self-reported · '.($social->metrics_reported_at?->format('d M Y') ?? 'date unavailable') }}</small>
-</a>@endforeach</div>
+<nav class="social-list" aria-label="Creator social profiles">@foreach($creator->socialAccounts as $social)<a class="social-account" href="{{ $social->url }}" target="_blank" rel="noopener noreferrer"><strong>{{ ucfirst($social->platform) }} <span aria-hidden="true">↗</span></strong><span class="sr-only">Opens in a new tab</span></a>@endforeach</nav>
 <h2 class="subsection-title">Selected work.
 </h2>
 <div class="portfolio-grid">@foreach($creator->portfolioItems as $item)<x-portfolio-tile :item="$item" />@endforeach</div>
@@ -33,11 +31,14 @@
 <p>{{ $package->description }}</p>
 <p>{{ $package->deliverables }}</p>
 <small>{{ $package->turnaround_days }} day turnaround · {{ $package->revision_policy }}</small>
-</article>@endforeach@if($creator->available)<a class="button button-purple" href="{{ auth()->check() ? route('collaborations',['creator'=>$creator->slug]) : route('get-started') }}">Send a collaboration brief <x-market-icon name="arrow-up-right"/>
+</article>@endforeach@if($creator->available && (! auth()->check() || in_array(auth()->user()->role, ['brand', 'customer'], true)))<a class="button button-purple" href="{{ auth()->check() ? route('collaborations',['creator'=>$creator->slug]) : route('get-started') }}">Send a collaboration brief <x-market-icon name="arrow-up-right"/>
 </a>@endif<small class="payment-note">Payments are agreed and coordinated directly. Colliva does not provide escrow or payment guarantees.</small>
 </aside>
 </div>
-@if($creator->available)<a class="button button-purple mobile-hire" href="#collaboration-services">View services &amp; collaborate <x-market-icon name="arrow-right" /></a>@endif
+@if($creator->socialAccounts->isNotEmpty())
+<section class="profile-audience"><h2 class="subsection-title">Audience information.</h2><p class="quiet">Metrics are self-reported unless independently marked as verified.</p><div class="social-list">@foreach($creator->socialAccounts as $social)<article class="social-account"><h3>{{ ucfirst($social->platform) }}</h3>@if($social->followers !== null)<span>{{ number_format($social->followers) }} followers</span>@endif@if($social->average_views !== null)<span>{{ number_format($social->average_views) }} average views</span>@endif<small>{{ $social->metrics_verified_at ? 'Metrics verified '.$social->metrics_verified_at->format('d M Y') : 'Self-reported · '.($social->metrics_reported_at?->format('d M Y') ?? 'date unavailable') }}</small></article>@endforeach</div></section>
+@endif
+@if($creator->available)<div class="mobile-hire"><div><small>Starting from</small><strong>₹{{ number_format($creator->servicePackages->min('price_minor') / 100) }}</strong></div><a class="button button-purple" href="#collaboration-services">View services <x-market-icon name="arrow-right" /></a></div>@endif
 <livewire:report-creator :creator-id="$creator->id" />
 </div>
 </x-layouts::marketplace>

@@ -7,7 +7,7 @@
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
-        <form method="POST" action="{{ route('signup.store', $role) }}" class="flex flex-col gap-6">
+        <form x-data="{ submitting: false }" @submit="if (submitting) { $event.preventDefault() } else { submitting = true }" @pageshow.window="submitting = false" :aria-busy="submitting" method="POST" action="{{ route('signup.store', $role) }}" class="flex flex-col gap-6">
             @csrf
             <!-- Name -->
             <flux:input
@@ -16,7 +16,6 @@
                 :value="old('name')"
                 type="text"
                 required
-                autofocus
                 autocomplete="name"
                 :placeholder="__('Full name')"
             />
@@ -73,7 +72,7 @@
             />
 
             <div class="flex items-center justify-end">
-                <flux:button type="submit" variant="primary" class="w-full" data-test="register-user-button">
+                <flux:button x-bind:disabled="submitting" type="submit" variant="primary" class="w-full" data-test="register-user-button">
                     Create {{ ucfirst($role) }} Account
                 </flux:button>
             </div>

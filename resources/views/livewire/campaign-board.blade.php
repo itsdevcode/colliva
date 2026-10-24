@@ -9,23 +9,26 @@
 </div>
 <x-workspace-errors/>
 @if(auth()->user()->role === 'brand')<section class="workspace-card">
-<button class="text-link" wire:click="newCampaign" aria-expanded="{{ $formOpen ? 'true' : 'false' }}">
-<x-market-icon name="briefcase"/>Create a new campaign +</button>
+@if(!$formOpen)<button class="text-link" wire:click="newCampaign" aria-expanded="{{ $formOpen ? 'true' : 'false' }}">
+<x-market-icon name="briefcase"/>Create a new campaign +</button>@endif
 @if($formOpen)
-<form wire:submit="createCampaign(true)" style="margin-top:25px">
+<form wire:submit="{{ $campaignStep < 3 ? 'nextCampaignStep' : 'createCampaign(true)' }}" style="margin-top:25px">
 <h2>{{ $editingCampaignId ? 'Edit your campaign draft.' : 'Start a new campaign.' }}</h2>
-<label>Campaign title<input wire:model="title" required maxlength="150">
-</label>
-<label>The idea<textarea wire:model="description" required>
+<div class="form-progress" role="status"><span>Step {{ $campaignStep }} of 3 · {{ ['Your idea', 'The creative brief', 'Timing & review'][$campaignStep - 1] ?? 'Your idea' }}</span><progress max="3" value="{{ $campaignStep }}">{{ $campaignStep }} of 3</progress></div>
+@if($campaignStep === 1)
+<label>Campaign title<input @error('title') aria-invalid="true" aria-describedby="error-title" @enderror wire:model="title" required maxlength="150">
+<x-field-error name="title" /></label>
+<label>The idea<textarea @error('description') aria-invalid="true" aria-describedby="error-description" @enderror wire:model="description" required>
 </textarea>
-</label>
+<x-field-error name="description" /></label>
 <div class="form-grid">
-<label>Category<select wire:model="category" required>
+<label>Category<select @error('category') aria-invalid="true" aria-describedby="error-category" @enderror wire:model="category" required>
 <option value="">Choose a category</option>@foreach($categories as $option)<option value="{{ $option->id }}">{{ $option->name }}</option>@endforeach</select>
-</label>
-<label>Total budget (₹)<input type="number" min="1" step=".01" wire:model="budget" required>
-</label>
+<x-field-error name="category" /></label>
+<label>Total budget (₹)<input inputmode="decimal" @error('budget') aria-invalid="true" aria-describedby="error-budget" @enderror type="number" min="1" step=".01" wire:model="budget" required>
+<x-field-error name="budget" /></label>
 </div>
+@elseif($campaignStep === 2)
 <fieldset>
 <legend>Target cities</legend>
 <div class="checkbox-group">@foreach($locationOptions as $location)<label class="checkbox-label">
@@ -36,22 +39,28 @@
 <div class="checkbox-group">@foreach(['instagram','youtube','ugc','other'] as $option)<label class="checkbox-label">
 <input type="checkbox" wire:model="platforms" value="{{ $option }}">{{ ucfirst($option) }}</label>@endforeach</div>
 </fieldset>
-<label>Deliverables<textarea wire:model="deliverables" required>
+<label>Deliverables<textarea @error('deliverables') aria-invalid="true" aria-describedby="error-deliverables" @enderror wire:model="deliverables" required>
 </textarea>
-</label>
-<label>Creator requirements<textarea wire:model="requirements" required>
+<x-field-error name="deliverables" /></label>
+<label>Creator requirements<textarea @error('requirements') aria-invalid="true" aria-describedby="error-requirements" @enderror wire:model="requirements" required>
 </textarea>
-</label>
+<x-field-error name="requirements" /></label>
+@elseif($campaignStep === 3)
 <div class="form-grid">
-<label>Apply by<input type="date" wire:model="applicationDeadline" required>
-</label>
-<label>Deliver content by<input type="date" wire:model="deliveryDeadline" required>
-</label>
+<label>Apply by<input @error('applicationDeadline') aria-invalid="true" aria-describedby="error-applicationDeadline" @enderror type="date" wire:model="applicationDeadline" required>
+<x-field-error name="applicationDeadline" /></label>
+<label>Deliver content by<input @error('deliveryDeadline') aria-invalid="true" aria-describedby="error-deliveryDeadline" @enderror type="date" wire:model="deliveryDeadline" required>
+<x-field-error name="deliveryDeadline" /></label>
 </div>
+<div class="campaign-review"><h3>{{ $title }}</h3><p>{{ $description }}</p><p>{{ $deliverables }}</p><span>Budget ₹{{ number_format((float) $budget, 2) }} · {{ count($locations) }} locations · {{ implode(', ', $platforms) }}</span><p class="form-help">Your campaign remains private until approved by an administrator.</p></div>
+@endif
 <div class="campaign-actions">
+@if($campaignStep > 1)<button type="button" class="button button-outline" wire:click="$set('campaignStep', {{ max(1, $campaignStep - 1) }})">Back</button>@endif
+@if($campaignStep < 3)<button type="submit" class="button button-purple" wire:loading.attr="disabled">Continue <x-market-icon name="arrow-right" /></button>@else
 <button class="button button-purple" wire:loading.attr="disabled">Submit for moderation <x-market-icon name="arrow-up-right" /></button>
 <button type="button" class="button button-outline" wire:click="createCampaign(false)" wire:loading.attr="disabled">{{ $editingCampaignId ? 'Save changes' : 'Save draft' }}</button>
-<button type="button" class="text-link" wire:click="cancelCampaignEdit">Cancel</button>
+@endif
+<button type="button" class="text-link" wire:click="cancelCampaignEdit" wire:confirm="Discard the changes in this form? Saved campaign drafts will be kept.">Cancel</button>
 </div>
 <p class="form-help">Complete your business profile first. Campaigns appear to creators after admin approval.</p>
 </form>
@@ -87,7 +96,7 @@
 <label>Your proposal<textarea wire:model="proposals.{{ $campaign->id }}" required minlength="20" maxlength="3000" placeholder="Tell the brand how you would bring this idea to life.">
 </textarea>
 </label>
-<label>Your quote (₹)<input type="number" min="1" step=".01" wire:model="quotes.{{ $campaign->id }}" required>
+<label>Your quote (₹)<input inputmode="decimal" type="number" min="1" step=".01" wire:model="quotes.{{ $campaign->id }}" required>
 </label>
 <button class="button button-purple" wire:loading.attr="disabled">Send application <x-market-icon name="arrow-up-right" /></button>
 </form>@else<p style="margin-top:20px">This opportunity requires an approved, available profile matching the campaign’s location, category and platforms.</p>@endcan @endif</article>@empty<div class="empty-state">

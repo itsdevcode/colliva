@@ -1,7 +1,7 @@
 @props(['item'])
 <article {{ $attributes->class('portfolio-tile') }}>
     @if($item->image_path)
-        <img src="{{ Storage::disk(config('filesystems.media_disk'))->url($item->image_path) }}" alt="{{ $item->title }}" loading="lazy" width="720" height="900">
+        <img src="{{ Storage::disk(config('filesystems.media_disk'))->url($item->image_path) }}" alt="{{ $item->title }}" loading="lazy" decoding="async" width="720" height="900">
     @endif
     <h3>{{ $item->title }}</h3>
     @if($item->description)<p>{{ $item->description }}</p>@endif

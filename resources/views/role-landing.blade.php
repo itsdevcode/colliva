@@ -12,7 +12,7 @@
                 <span class="role-footnote">Original work. Real connections. Room for you.</span>
             </div>
             <figure class="role-hero-visual">
-                <img src="{{ asset('images/'.$page['image']) }}" alt="" width="1200" height="800" fetchpriority="high">
+                <x-editorial-image :name="$page['image']" :priority="true" sizes="(min-width: 900px) 45vw, 90vw" />
                 <figcaption><span class="eyebrow">THE POSSIBILITIES START WITH YOU</span><strong>{{ $page['imageLabel'] }}</strong><small>Illustrative imagery</small></figcaption>
             </figure>
         </section>

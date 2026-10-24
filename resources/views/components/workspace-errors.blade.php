@@ -1,2 +1,2 @@
 @if(session('status'))<div class="notice success" role="status" x-data="{ visible: true }" x-show="visible"> <x-market-icon name="check"/>{{ session('status') }}<button type="button" class="icon-button notice-dismiss" @click="visible = false" aria-label="Dismiss notification">×</button></div>@endif
-@if($errors->any())<div class="notice error" role="alert"><strong>Please check the following:</strong><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+@if($errors->any())<div class="notice error" role="alert" tabindex="-1" data-validation-summary><strong>Please check the following:</strong><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif

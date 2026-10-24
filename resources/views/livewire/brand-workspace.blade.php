@@ -13,17 +13,17 @@
 <h2>A little about your business.</h2>
 <form wire:submit="save">
 <div class="form-grid">
-<label>Business name<input wire:model="companyName" required autocomplete="organization" maxlength="150">
-</label>
-<label>Business website (optional)<input type="url" wire:model="website" placeholder="https://">
-</label>
+<label>Business name<input @error('companyName') aria-invalid="true" aria-describedby="error-companyName" @enderror wire:model="companyName" required autocomplete="organization" maxlength="150">
+<x-field-error name="companyName" /></label>
+<label>Business website (optional)<input @error('website') aria-invalid="true" aria-describedby="error-website" @enderror type="url" wire:model="website" placeholder="https://">
+<x-field-error name="website" /></label>
 </div>
-<label>What’s your story?<textarea wire:model="description" required maxlength="3000">
+<label>What’s your story?<textarea @error('description') aria-invalid="true" aria-describedby="error-description" @enderror wire:model="description" required maxlength="3000">
 </textarea>
-</label>
-<label>City<select wire:model="city" required>
+<x-field-error name="description" /></label>
+<label>City<select @error('city') aria-invalid="true" aria-describedby="error-city" @enderror wire:model="city" required>
 <option value="">Choose your city</option>@foreach($locations as $location)<option value="{{ $location->id }}">{{ $location->name }}</option>@endforeach</select>
-</label>
+<x-field-error name="city" /></label>
 <button class="button button-purple" wire:loading.attr="disabled">Save business profile</button>
 </form>
 </section>
