@@ -12,24 +12,26 @@
 @if(in_array(auth()->user()->role, ['brand', 'customer'], true) && $creator)<section class="workspace-card">
 <h2>Tell them what you have in mind.</h2>
 <form wire:submit="send">
-<label>Creator username<input wire:model="creator" required>
-</label>
-<label>Project title<input wire:model="title" required maxlength="150">
-</label>
-<label>Scope, deliverables & payment terms<textarea wire:model="scope" required minlength="20" placeholder="Describe what you want to make, the deliverables, usage rights and how you’ll coordinate payment.">
+<label>Creator username<input @error('creator') aria-invalid="true" aria-describedby="error-creator" @enderror wire:model="creator" required>
+<x-field-error name="creator" /></label>
+<label>Project title<input @error('title') aria-invalid="true" aria-describedby="error-title" @enderror wire:model="title" required maxlength="150">
+<x-field-error name="title" /></label>
+<label>Scope, deliverables & payment terms<textarea @error('scope') aria-invalid="true" aria-describedby="error-scope" @enderror wire:model="scope" required minlength="20" placeholder="Describe what you want to make, the deliverables, usage rights and how you’ll coordinate payment.">
 </textarea>
-</label>
+<x-field-error name="scope" /></label>
 <div class="form-grid">
-<label>Agreed offer (₹)<input type="number" min="1" step=".01" wire:model="price" required>
-</label>
-<label>Delivery deadline<input type="date" wire:model="deadline" required>
-</label>
+<label>Agreed offer (₹)<input inputmode="decimal" @error('price') aria-invalid="true" aria-describedby="error-price" @enderror type="number" min="1" step=".01" wire:model="price" required>
+<x-field-error name="price" /></label>
+<label>Delivery deadline<input @error('deadline') aria-invalid="true" aria-describedby="error-deadline" @enderror type="date" wire:model="deadline" required>
+<x-field-error name="deadline" /></label>
 </div>
 <button class="button button-purple" wire:loading.attr="disabled">Send brief & confirm terms <x-market-icon name="arrow-up-right" /></button>
 <small class="form-help">Sending a brief confirms your proposed terms. Work begins only after the creator accepts.</small>
 </form>
 </section>@endif
-@forelse($offers as $offer)<article class="workspace-card" wire:key="offer-{{ $offer->id }}">
+@foreach(['enquiries' => $offers->filter(fn ($offer) => ! $offer->collaboration), 'active-collaborations' => $offers->filter(fn ($offer) => $offer->collaboration)] as $sectionId => $sectionOffers)
+<section id="{{ $sectionId }}" class="collaboration-section"><h2>{{ $sectionId === 'enquiries' ? (auth()->user()->role === 'customer' ? 'Personal enquiries' : 'Collaboration requests') : 'Active & past collaborations' }}</h2>
+@forelse($sectionOffers as $offer)<article class="workspace-card" wire:key="offer-{{ $offer->id }}">
 <span class="status-badge">{{ $offer->collaboration?->status ?? $offer->status }}</span>
 <h2 style="margin-top:15px">{{ $offer->title }}</h2>
 <span class="eyebrow">{{ $offer->brandProfile?->company_name ?? $offer->customerProfile?->user->name }} × {{ $offer->creatorProfile->display_name }}</span>
@@ -85,7 +87,7 @@
 <h2>A great collaboration starts with hello.</h2>
 <p>{{ in_array(auth()->user()->role, ['brand', 'customer'], true) ? 'Find a creator you connect with and send them a brief from their profile.' : 'Your collaboration requests will appear here. Keep making work that feels like you.' }}</p>
 <a class="button button-outline" href="{{ route('creators') }}">Explore creators <x-market-icon name="arrow-up-right" /></a>
-</div>@endforelse
+</div>@endforelse</section>@endforeach
 <section class="workspace-card" style="margin-top:30px">
 <div class="section-heading">
 <h2>Your notifications.</h2>

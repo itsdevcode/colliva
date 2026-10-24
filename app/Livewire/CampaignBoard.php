@@ -27,6 +27,8 @@ class CampaignBoard extends Component
 
     public bool $formOpen = false;
 
+    public int $campaignStep = 1;
+
     public string $title = '';
 
     public string $description = '';
@@ -60,12 +62,33 @@ class CampaignBoard extends Component
         abort_unless(in_array(auth()->user()->role, ['brand', 'creator'], true), 403);
     }
 
+    /** @return array<string, array<int, string>> */
+    private function campaignRules(): array
+    {
+        return ['title' => ['required', 'string', 'max:150'], 'description' => ['required', 'string', 'max:10000'], 'category' => ['required', 'exists:categories,id'], 'locations' => ['required', 'array', 'min:1', 'max:30'], 'locations.*' => ['integer', 'exists:locations,id'], 'platforms' => ['required', 'array', 'min:1', 'max:4'], 'platforms.*' => ['in:instagram,youtube,ugc,other'], 'deliverables' => ['required', 'string', 'max:5000'], 'requirements' => ['required', 'string', 'max:5000'], 'budget' => ['required', 'regex:/^\d{1,8}(\.\d{1,2})?$/', 'numeric', 'min:1', 'max:100000000'], 'applicationDeadline' => ['required', 'date', 'after_or_equal:today'], 'deliveryDeadline' => ['required', 'date', 'after_or_equal:applicationDeadline']];
+    }
+
+    public function nextCampaignStep(): void
+    {
+        Gate::authorize('create', Campaign::class);
+        $this->campaignStep = min(3, max(1, $this->campaignStep));
+        if ($this->campaignStep === 3) {
+            return;
+        }
+        $fields = match ($this->campaignStep) {
+            1 => ['title', 'description', 'category', 'budget'],
+            2 => ['locations', 'locations.*', 'platforms', 'platforms.*', 'deliverables', 'requirements'],
+        };
+        $this->validate(array_intersect_key($this->campaignRules(), array_flip($fields)));
+        $this->campaignStep = min(3, max(1, $this->campaignStep + 1));
+    }
+
     public function createCampaign(bool $publish = false): void
     {
         Gate::authorize('create', Campaign::class);
         $brand = auth()->user()->brandProfile;
         abort_unless($brand !== null, 403);
-        $this->validate(['title' => ['required', 'string', 'max:150'], 'description' => ['required', 'string', 'max:10000'], 'category' => ['required', 'exists:categories,id'], 'locations' => ['required', 'array', 'min:1', 'max:30'], 'locations.*' => ['integer', 'exists:locations,id'], 'platforms' => ['required', 'array', 'min:1', 'max:4'], 'platforms.*' => ['in:instagram,youtube,ugc,other'], 'deliverables' => ['required', 'string', 'max:5000'], 'requirements' => ['required', 'string', 'max:5000'], 'budget' => ['required', 'regex:/^\d{1,8}(\.\d{1,2})?$/', 'numeric', 'min:1', 'max:100000000'], 'applicationDeadline' => ['required', 'date', 'after_or_equal:today'], 'deliveryDeadline' => ['required', 'date', 'after_or_equal:applicationDeadline']]);
+        $this->validate($this->campaignRules());
         DB::transaction(function () use ($brand, $publish) {
             $campaign = $this->editingCampaignId
                 ? $brand->campaigns()->lockForUpdate()->findOrFail($this->editingCampaignId)
@@ -113,6 +136,7 @@ class CampaignBoard extends Component
         $this->budget = number_format($campaign->budget_minor / 100, 2, '.', '');
         $this->applicationDeadline = $campaign->application_deadline->toDateString();
         $this->deliveryDeadline = $campaign->delivery_deadline->toDateString();
+        $this->campaignStep = 1;
         $this->formOpen = true;
     }
 
@@ -120,12 +144,13 @@ class CampaignBoard extends Component
     {
         Gate::authorize('create', Campaign::class);
         $this->cancelCampaignEdit();
+        $this->campaignStep = 1;
         $this->formOpen = true;
     }
 
     public function cancelCampaignEdit(): void
     {
-        $this->reset('editingCampaignId', 'formOpen', 'title', 'description', 'category', 'locations', 'platforms', 'deliverables', 'requirements', 'budget', 'applicationDeadline', 'deliveryDeadline');
+        $this->reset('campaignStep', 'editingCampaignId', 'formOpen', 'title', 'description', 'category', 'locations', 'platforms', 'deliverables', 'requirements', 'budget', 'applicationDeadline', 'deliveryDeadline');
         $this->resetValidation();
     }
 

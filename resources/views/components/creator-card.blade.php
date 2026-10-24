@@ -1,6 +1,6 @@
 @props(['creator'])
 <article class="creator-card">
-<a class="creator-visual" href="{{ route('creator.show',$creator->slug) }}">@if($creator->portfolioItems->firstWhere('image_path','!=',null))<img src="{{ Storage::disk(config('filesystems.media_disk'))->url($creator->portfolioItems->firstWhere('image_path','!=',null)->image_path) }}" alt="Portfolio by {{ $creator->display_name }}" loading="lazy" width="600" height="650">@else<div class="portfolio-placeholder">
+<a class="creator-visual" href="{{ route('creator.show',$creator->slug) }}">@if($creator->portfolioItems->firstWhere('image_path','!=',null))<img src="{{ Storage::disk(config('filesystems.media_disk'))->url($creator->portfolioItems->firstWhere('image_path','!=',null)->image_path) }}" alt="Portfolio by {{ $creator->display_name }}" loading="lazy" decoding="async" width="600" height="750">@else<div class="portfolio-placeholder">
 <x-market-icon name="play"/>
 <span>Explore their work</span>
 </div>@endif<span class="card-category">{{ $creator->category->name }}</span>@if($creator->available)<span class="availability-indicator" title="Available for work"><span class="sr-only">Available for work</span>
@@ -12,7 +12,7 @@
 <x-market-icon name="pin"/>{{ $creator->location->name }}</span>
 </div>
 </div>
-<div class="creator-platforms">@foreach($creator->socialAccounts->pluck('platform')->unique() as $platform)<span>{{ ucfirst($platform) }}</span>@endforeach</div>
+<div class="creator-platforms" aria-label="Creator platforms">@foreach($creator->socialAccounts->pluck('platform')->unique() as $platform)<span>{{ ucfirst($platform) }}</span>@endforeach</div>
 <div class="creator-card-bottom">
 <span>@if($creator->service_packages_min_price_minor !== null)From <strong>₹{{ number_format($creator->service_packages_min_price_minor/100) }}</strong>@else Enquire for pricing @endif
 </span>

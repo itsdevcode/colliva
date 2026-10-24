@@ -4,41 +4,29 @@
         <div class="container">
             <span class="market-kicker"><span class="location-dot"></span>THE RIGHT PEOPLE. YOUR NEXT BIG IDEA.</span>
             <h1>Great brands deserve<br><span>great creators.</span></h1>
-            <p class="market-hero-description">Discover local influencers and UGC creators. Find your fit,<br class="desktop-break"> explore their work, and turn a good idea into a great collaboration.</p>
+            <p class="market-hero-description">Find local influencers and UGC creators. Explore their work and make something great together.</p>
 
-            <form class="market-discovery-form" action="{{ route('creators') }}" method="get">
-                <fieldset class="market-platforms">
-                    <legend class="sr-only">Creator platform</legend>
-                    @foreach(['' => 'All creators', 'instagram' => 'Instagram', 'youtube' => 'YouTube', 'ugc' => 'UGC creators'] as $value => $label)
-                        <label class="platform-option"><input type="radio" name="platform" value="{{ $value }}" @checked($value === '')><span>{{ $label }}</span></label>
-                    @endforeach
-                </fieldset>
-                <div class="discovery-strip" aria-label="Find creators">
-                    <div class="market-search-fields">
-                        <label class="search-field"><x-market-icon name="search" /><span class="search-field-copy"><span class="field-caption">What are you looking for?</span><input type="search" name="search" placeholder="Name or creative style"></span></label>
-                        <x-discovery-picker name="category" label="Category" placeholder="Any category" :options="$categories" />
-                        <x-discovery-picker name="city" label="Location" placeholder="Any location" :options="$locations" />
-                        <x-colliva-button type="submit"><x-market-icon name="search" />Find Creators</x-colliva-button>
-                    </div>
+            <div class="hero-actions home-primary-actions flex flex-col gap-3 sm:flex-row">
+                <x-colliva-button :href="route('creators')">Explore Creators <x-market-icon name="arrow-right" /></x-colliva-button>
+                <a class="text-link" href="{{ route('for-creators') }}">Join as Creator</a>
+            </div>
+            <form class="home-search" action="{{ route('creators') }}" method="get" role="search">
+                <label class="sr-only" for="home-creator-search">Search creators by name or style</label>
+                <div class="home-search-entry flex items-center gap-2">
+                    <x-market-icon name="search" /><input id="home-creator-search" type="search" name="search" placeholder="Name or creative style" enterkeyhint="search" autocomplete="off">
+                    <button type="submit" class="icon-button" aria-label="Search creators"><x-market-icon name="arrow-right" /></button>
+                </div>
+                <div class="home-search-shortcuts">
+                    <details class="home-location"><summary><x-market-icon name="pin" />Location &amp; category</summary><div class="home-search-options grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        <label>City<select name="city"><option value="">Any city</option>@foreach($locations as $location)<option value="{{ $location->slug }}">{{ $location->name }}</option>@endforeach</select></label>
+                        <label>Category<select name="category"><option value="">Any category</option>@foreach($categories as $category)<option value="{{ $category->slug }}">{{ $category->name }}</option>@endforeach</select></label>
+                        <label>Platform<select name="platform"><option value="">All platforms</option><option value="instagram">Instagram</option><option value="youtube">YouTube</option><option value="ugc">UGC</option></select></label>
+                    </div></details>
+                    <button type="submit" name="filters" value="open" class="text-link"><x-market-icon name="filter" />Filters</button>
                 </div>
             </form>
             <div class="market-quick-links"><span>Popular searches</span><a href="{{ route('creators', ['category' => 'fashion']) }}">Fashion</a><a href="{{ route('creators', ['category' => 'beauty']) }}">Beauty</a><a href="{{ route('creators', ['platform' => 'ugc']) }}">UGC</a><a href="{{ route('creators', ['budget' => 5000]) }}">Under ₹5,000</a><a href="{{ route('creators', ['available' => 1]) }}">Available now <x-market-icon name="arrow-up-right" /></a></div>
         </div>
-    </section>
-
-    <section class="container market-browse">
-        <div class="market-section-heading"><div><h2>A creator for every kind of brand.</h2><p>Start with a category. Find a perspective you love.</p></div><a class="text-link" href="{{ route('creators') }}">Explore all creators <x-market-icon name="arrow-right" /></a></div>
-        <div class="market-category-grid">
-            @foreach([['fashion', 'Fashion', 'Style with a point of view', 'fashion-creators.webp'], ['food-restaurants', 'Food & Restaurants', 'Stories worth a second serving', 'food-creators.webp'], ['beauty', 'Beauty', 'A fresh take on your everyday', 'beauty-still-life.webp'], ['ugc-creators', 'UGC Creators', 'Content that feels like a conversation', 'creative-studio.webp']] as [$slug, $name, $description, $image])
-                @if($categories->contains('slug', $slug))
-                    <a class="market-category-card" href="{{ route('creators', ['category' => $slug]) }}">
-                        <div class="market-category-photo"><img src="{{ asset('images/'.$image) }}" alt="Illustrative {{ strtolower($name) }} content creation scene" width="600" height="750" @if($loop->index < 2) fetchpriority="high" @else loading="lazy" @endif decoding="async"><span class="category-explore"><x-market-icon name="arrow-up-right" /></span></div>
-                        <h3>{{ $name }}</h3><p>{{ $description }}</p>
-                    </a>
-                @endif
-            @endforeach
-        </div>
-        <div class="market-category-footer"><div class="market-category-links">@foreach($categories as $category)<a href="{{ route('creators', ['category' => $category->slug]) }}">{{ $category->name }}</a>@endforeach</div><small>Category imagery is illustrative.</small></div>
     </section>
 
     <section class="container market-featured">
@@ -52,6 +40,21 @@
                 <x-colliva-button :href="route('for-creators')" variant="outline">Join as Creator <x-market-icon name="arrow-right" /></x-colliva-button>
             </div>
         @endif
+    </section>
+
+    <section class="container market-browse">
+        <div class="market-section-heading"><div><h2>A creator for every kind of brand.</h2><p>Start with a category. Find a perspective you love.</p></div><a class="text-link" href="{{ route('creators') }}">Explore all creators <x-market-icon name="arrow-right" /></a></div>
+        <div class="market-category-grid">
+            @foreach([['fashion', 'Fashion', 'Style with a point of view', 'fashion-creators.webp'], ['food-restaurants', 'Food & Restaurants', 'Stories worth a second serving', 'food-creators.webp'], ['beauty', 'Beauty', 'A fresh take on your everyday', 'beauty-still-life.webp'], ['ugc-creators', 'UGC Creators', 'Content that feels like a conversation', 'creative-studio.webp']] as [$slug, $name, $description, $image])
+                @if($categories->contains('slug', $slug))
+                    <a class="market-category-card" href="{{ route('creators', ['category' => $slug]) }}">
+                        <div class="market-category-photo"><x-editorial-image :name="$image" :alt="'Illustrative '.strtolower($name).' content creation scene'" sizes="(min-width: 1100px) 280px, (min-width: 600px) 45vw, 90vw" /><span class="category-explore"><x-market-icon name="arrow-up-right" /></span></div>
+                        <h3>{{ $name }}</h3><p>{{ $description }}</p>
+                    </a>
+                @endif
+            @endforeach
+        </div>
+        <div class="market-category-footer"><div class="market-category-links">@foreach($categories as $category)<a href="{{ route('creators', ['category' => $category->slug]) }}">{{ $category->name }}</a>@endforeach</div><small>Category imagery is illustrative.</small></div>
     </section>
 
     <section class="market-workflow" id="how-it-works">

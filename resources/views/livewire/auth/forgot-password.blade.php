@@ -5,7 +5,7 @@
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
-        <form method="POST" action="{{ route('password.email') }}" class="flex flex-col gap-6">
+        <form x-data="{ submitting: false }" @submit="if (submitting) { $event.preventDefault() } else { submitting = true }" @pageshow.window="submitting = false" :aria-busy="submitting" method="POST" action="{{ route('password.email') }}" class="flex flex-col gap-6">
             @csrf
 
             <!-- Email Address -->
@@ -13,12 +13,12 @@
                 name="email"
                 :label="__('Email address')"
                 type="email"
+                autocomplete="email"
                 required
-                autofocus
                 placeholder="email@example.com"
             />
 
-            <flux:button variant="primary" type="submit" class="w-full" data-test="email-password-reset-link-button">
+            <flux:button x-bind:disabled="submitting" variant="primary" type="submit" class="w-full" data-test="email-password-reset-link-button">
                 {{ __('Email password reset link') }}
             </flux:button>
         </form>

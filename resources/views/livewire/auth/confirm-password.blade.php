@@ -15,7 +15,7 @@
             :separator="__('Or confirm with password')"
         />
 
-        <form method="POST" action="{{ route('password.confirm.store') }}" class="flex flex-col gap-6">
+        <form x-data="{ submitting: false }" @submit="if (submitting) { $event.preventDefault() } else { submitting = true }" @pageshow.window="submitting = false" :aria-busy="submitting" method="POST" action="{{ route('password.confirm.store') }}" class="flex flex-col gap-6">
             @csrf
 
             <flux:input
@@ -28,7 +28,7 @@
                 viewable
             />
 
-            <flux:button variant="primary" type="submit" class="w-full" data-test="confirm-password-button">
+            <flux:button x-bind:disabled="submitting" variant="primary" type="submit" class="w-full" data-test="confirm-password-button">
                 {{ __('Confirm') }}
             </flux:button>
         </form>

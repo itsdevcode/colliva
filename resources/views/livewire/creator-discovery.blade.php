@@ -1,4 +1,4 @@
-<div class="container section discovery-page" x-data>
+<div class="container section discovery-page" x-data @if(request('filters') === 'open') x-init="$nextTick(() => $wire.openFilters().then(() => $refs.filters.showModal()))" @endif @filters-applied.window="$refs.filters.close()">
 @php($activeFilters = array_filter([
     'search' => $search !== '' ? 'Search: '.$search : null,
     'city' => $city !== '' ? ($locations->firstWhere('slug', $city)?->name ?? $city) : null,
@@ -13,7 +13,7 @@
 ]))
 <span class="eyebrow">Discover your next creative partner</span>
 <div class="section-heading">
-    <div><h1>Find creators for your next campaign.</h1><p>Compare original work, platforms, and services. Find the right fit for your brand.</p></div>
+    <div><h1>Find your creative partner.</h1><p>Compare original work, platforms, and services. Find the right fit for your project.</p></div>
 </div>
 <div class="discovery-platforms" aria-label="Filter by creator platform">
     @foreach(['' => 'All creators', 'instagram' => 'Instagram', 'youtube' => 'YouTube', 'ugc' => 'UGC creators'] as $value => $label)
@@ -21,12 +21,29 @@
     @endforeach
 </div>
 <div class="mobile-discovery-tools">
-    <label><span class="sr-only">Search creators</span><input type="search" wire:model.live.debounce.300ms="search" placeholder="Name or username"></label>
-    <button type="button" class="button button-outline" @click="$refs.filters.showModal()" aria-haspopup="dialog"><x-market-icon name="filter" />Filters</button>
+    <label><span class="sr-only">Search creators</span><input type="search" wire:model.live.debounce.500ms="search" placeholder="Name or username"></label>
+    <button type="button" class="button button-outline" @click="$wire.openFilters().then(() => $refs.filters.showModal())" aria-haspopup="dialog"><x-market-icon name="filter" />Filters <span class="filter-count">{{ count(collect($activeFilters)->except('search')) }}</span></button>
 </div>
 <x-colliva-drawer name="filters" title="Filter creators" wire:ignore.self>
-    <div class="filter-panel mobile-filter-panel"><x-creator-filters :locations="$locations" :categories="$categories" :languages="$languages" :values="['city' => $city, 'category' => $category, 'platform' => $platform, 'language' => $language]" :advanced-active="$minFollowers !== '' || $maxFollowers !== '' || $language !== '' || $available || $verified" /></div>
-    <button type="button" class="button button-purple drawer-done" @click="$refs.filters.close()">Show {{ $creators->total() }} {{ Str::plural('creator', $creators->total()) }}</button>
+    <form wire:submit="applyFilters" class="mobile-filter-form">
+        <p class="quiet">Choose what matters. Your results update when you apply.</p>
+        <x-workspace-errors />
+        @foreach(['city' => ['City', $locations], 'category' => ['Category', $categories], 'language' => ['Language', $languages]] as $property => [$label, $options])
+            <label>{{ $label }}<select wire:model="draftFilters.{{ $property }}"><option value="">All {{ strtolower($label) }} options</option>@foreach($options as $option)<option value="{{ $option->slug }}">{{ $option->name }}</option>@endforeach</select></label>
+        @endforeach
+        <label>Platform<select wire:model="draftFilters.platform"><option value="">All platforms</option>@foreach(['instagram', 'youtube', 'ugc', 'other'] as $option)<option value="{{ $option }}">{{ ucfirst($option) }}</option>@endforeach</select></label>
+        <label>Maximum budget (₹)<input type="number" inputmode="numeric" min="0" max="100000000" wire:model="draftFilters.budget" placeholder="Any budget"></label>
+        <details class="advanced-filters" @if($minFollowers !== '' || $maxFollowers !== '' || $available || $verified) open @endif>
+            <summary>Audience &amp; availability <span aria-hidden="true">+</span></summary>
+            <div class="advanced-filter-fields">
+                <label>Minimum followers<input type="number" inputmode="numeric" min="0" wire:model="draftFilters.minFollowers" placeholder="No minimum"></label>
+                <label>Maximum followers<input type="number" inputmode="numeric" min="0" wire:model="draftFilters.maxFollowers" placeholder="No maximum"></label>
+                <label class="checkbox-label"><input type="checkbox" wire:model="draftFilters.available">Available for work</label>
+                <label class="checkbox-label"><input type="checkbox" wire:model="draftFilters.verified">Verified profiles</label>
+            </div>
+        </details>
+        <div class="drawer-actions"><button type="button" class="button button-outline" wire:click="clearDraftFilters" wire:loading.attr="disabled">Clear all</button><button type="submit" class="button button-purple" wire:loading.attr="disabled">Apply filters <x-market-icon name="check" /></button></div>
+    </form>
 </x-colliva-drawer>
 <x-workspace-errors/>
 <div class="discovery-layout">

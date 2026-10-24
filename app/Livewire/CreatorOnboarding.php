@@ -101,6 +101,12 @@ class CreatorOnboarding extends Component
         }
     }
 
+    public function updatedStep(): void
+    {
+        $this->step = min(6, max(1, $this->step));
+        $this->dispatch('studio-step-changed', step: $this->step);
+    }
+
     private function profile(): CreatorProfile
     {
         $profile = auth()->user()->creatorProfile()->firstOrFail();
@@ -135,7 +141,7 @@ class CreatorOnboarding extends Component
         });
         $this->photo = null;
         $this->cover = null;
-        $this->step = 2;
+        $this->step = $this->step === 3 ? 4 : 2;
         session()->flash('status', 'Profile draft saved.');
     }
 

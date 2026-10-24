@@ -2,7 +2,7 @@
 <html lang="en" class="light">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{{ $title ?? 'Great brands deserve great creators.' }} — Colliva</title>
 <meta name="description" content="{{ $description ?? 'Discover local influencers and UGC creators in Yamunanagar, Jagadhri and across Haryana. Find your creative partner on Colliva.' }}">
 <link rel="canonical" href="{{ url()->current() }}">
@@ -28,20 +28,25 @@
     </nav>
     <div class="nav-actions">
         @auth
-            <x-colliva-button :href="route('dashboard')" variant="outline" :small="true">My Workspace</x-colliva-button>
+            <a class="account-avatar" href="{{ route('dashboard') }}" aria-label="Open your workspace">{{ auth()->user()->initials() }}</a>
+            <x-colliva-button :href="route('dashboard')" variant="outline" :small="true" class="header-primary">My Workspace</x-colliva-button>
         @else
             <a class="login-link" href="{{ route('login') }}">Login</a>
-            <x-colliva-button :href="route('get-started')" :small="true">Get Started</x-colliva-button>
+            <x-colliva-button :href="route('get-started')" :small="true" class="header-primary">Get Started</x-colliva-button>
         @endauth
         <button type="button" class="menu-toggle icon-button" @click="$refs.navigation.showModal()" aria-label="Open navigation" aria-haspopup="dialog"><x-market-icon name="menu" /></button>
     </div>
     <x-colliva-drawer name="navigation" title="Navigation">
-        <nav class="drawer-links" aria-label="Mobile">
+        <nav class="drawer-links" aria-label="Mobile" @click="if ($event.target.closest('a')) $refs.navigation.close()">
             <a href="{{ route('creators') }}">Discover Creators</a>
             <a href="{{ route('home') }}#how-it-works" @click="$refs.navigation.close()">How It Works</a>
             <a href="{{ route('for-brands') }}" @click="$refs.navigation.close()">For Brands</a>
             <a href="{{ route('for-creators') }}" @click="$refs.navigation.close()">For Creators</a>
+            <a href="{{ route('for-customers') }}">For Customers</a>
             @auth
+                <a href="{{ route('profile.edit') }}">Account settings</a>
+                <a href="{{ route('collaborations') }}">Requests &amp; collaborations</a>
+                <form action="{{ route('logout') }}" method="post">@csrf<button type="submit" class="text-link">Log out</button></form>
                 <a href="{{ route('dashboard') }}" @if(request()->routeIs('dashboard', '*.dashboard')) aria-current="page" @endif>My Workspace</a>
             @else
                 <a href="{{ route('login') }}">Login</a>
@@ -60,7 +65,8 @@
 </form>
 </nav>
 @endauth
-<main id="main">{{ $slot }}</main>
+<main id="main" tabindex="-1">{{ $slot }}</main>
+<x-mobile-workspace-nav />
 <footer class="site-footer">
 <div class="footer-top">
 <div>

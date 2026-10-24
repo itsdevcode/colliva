@@ -5,7 +5,7 @@
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
-        <form method="POST" action="{{ route('password.update') }}" class="flex flex-col gap-6">
+        <form x-data="{ submitting: false }" @submit="if (submitting) { $event.preventDefault() } else { submitting = true }" @pageshow.window="submitting = false" :aria-busy="submitting" method="POST" action="{{ route('password.update') }}" class="flex flex-col gap-6">
             @csrf
             <!-- Token -->
             <input type="hidden" name="token" value="{{ request()->route('token') }}">
@@ -45,7 +45,7 @@
             />
 
             <div class="flex items-center justify-end">
-                <flux:button type="submit" variant="primary" class="w-full" data-test="reset-password-button">
+                <flux:button x-bind:disabled="submitting" type="submit" variant="primary" class="w-full" data-test="reset-password-button">
                     {{ __('Reset password') }}
                 </flux:button>
             </div>
