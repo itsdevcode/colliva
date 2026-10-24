@@ -8,6 +8,7 @@ use App\Models\Language;
 use App\Models\Location;
 use Illuminate\View\View;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -16,6 +17,9 @@ use Livewire\WithPagination;
 class CreatorDiscovery extends Component
 {
     use WithPagination;
+
+    #[Locked]
+    public bool $compact = false;
 
     #[Url]
     public string $search = '';
@@ -50,8 +54,9 @@ class CreatorDiscovery extends Component
     #[Url]
     public string $sort = 'recent';
 
-    public function mount(?string $city = null, ?string $category = null): void
+    public function mount(?string $city = null, ?string $category = null, bool $compact = false): void
     {
+        $this->compact = $compact;
         if ($city && ! request()->has('city')) {
             $this->city = $city;
         } if ($category && ! request()->has('category')) {
@@ -112,6 +117,51 @@ class CreatorDiscovery extends Component
         $this->dispatch('filters-applied');
     }
 
+    /** @return array<string, string|bool> */
+    public function filterParameters(): array
+    {
+        $filters = [];
+        foreach (['search', 'city', 'category', 'platform', 'language', 'budget', 'minFollowers', 'maxFollowers', 'available', 'verified'] as $property) {
+            if ($this->{$property} !== '' && $this->{$property} !== false) {
+                $filters[$property] = $this->{$property};
+            }
+        }
+
+        return $filters;
+    }
+
+    public function discoveryUrl(): string
+    {
+        $parameters = $this->filterParameters();
+        if ($this->sort !== 'recent') {
+            $parameters['sort'] = $this->sort;
+        }
+
+        return route('creators', $parameters);
+    }
+
+    public function searchCreators(): void
+    {
+        $this->redirect($this->discoveryUrl());
+    }
+
+    public function toggleQuickFilter(string $preset): void
+    {
+        if ($preset === 'available') {
+            $this->available = ! $this->available;
+        } else {
+            [$property, $value] = match ($preset) {
+                'fashion' => ['category', 'fashion'],
+                'beauty' => ['category', 'beauty'],
+                'ugc' => ['platform', 'ugc'],
+                'budget' => ['budget', '5000'],
+                default => abort(404),
+            };
+            $this->{$property} = $this->{$property} === $value ? '' : $value;
+        }
+        $this->resetPage();
+    }
+
     public function saveCreator(int $id): void
     {
         $user = auth()->user();
@@ -159,6 +209,24 @@ class CreatorDiscovery extends Component
             $query->orderBy('service_packages_min_price_minor', $this->sort === 'price-asc' ? 'asc' : 'desc');
         }
 
-        return view('livewire.creator-discovery', ['creators' => $query->latest('id')->paginate(12), 'locations' => Location::orderBy('name')->get(), 'categories' => Category::orderBy('name')->get(), 'languages' => Language::orderBy('name')->get()])->title('Explore creators');
+        $locations = Location::orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
+        $languages = Language::orderBy('name')->get();
+        $creators = $this->compact ? null : $query->latest('id')->paginate(12);
+        $resultCount = $creators?->total() ?? $query->count();
+        $activeFilters = array_filter([
+            'search' => $this->search !== '' ? 'Search: '.$this->search : null,
+            'city' => $this->city !== '' ? $locations->pluck('name', 'slug')->get($this->city, $this->city) : null,
+            'category' => $this->category !== '' ? $categories->pluck('name', 'slug')->get($this->category, $this->category) : null,
+            'platform' => $this->platform !== '' ? ucfirst($this->platform) : null,
+            'budget' => $this->budget !== '' ? 'Budget: ₹'.$this->budget : null,
+            'language' => $this->language !== '' ? $languages->pluck('name', 'slug')->get($this->language, $this->language) : null,
+            'minFollowers' => $this->minFollowers !== '' ? 'Min followers: '.$this->minFollowers : null,
+            'maxFollowers' => $this->maxFollowers !== '' ? 'Max followers: '.$this->maxFollowers : null,
+            'available' => $this->available ? 'Available for work' : null,
+            'verified' => $this->verified ? 'Verified profiles' : null,
+        ]);
+
+        return view($this->compact ? 'livewire.home-creator-search' : 'livewire.creator-discovery', compact('creators', 'resultCount', 'locations', 'categories', 'languages', 'activeFilters'))->title('Explore creators');
     }
 }
