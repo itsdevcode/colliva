@@ -9,7 +9,7 @@
 </div>
 <x-workspace-errors/>
 <div class="notice notice-neutral">Payments are coordinated directly between you and your collaborator. Colliva does not collect payments, secure funds or provide escrow.</div>
-@if(auth()->user()->role === 'brand' && $creator)<section class="workspace-card">
+@if(in_array(auth()->user()->role, ['brand', 'customer'], true) && $creator)<section class="workspace-card">
 <h2>Tell them what you have in mind.</h2>
 <form wire:submit="send">
 <label>Creator username<input wire:model="creator" required>
@@ -32,7 +32,7 @@
 @forelse($offers as $offer)<article class="workspace-card" wire:key="offer-{{ $offer->id }}">
 <span class="status-badge">{{ $offer->collaboration?->status ?? $offer->status }}</span>
 <h2 style="margin-top:15px">{{ $offer->title }}</h2>
-<span class="eyebrow">{{ $offer->brandProfile->company_name }} × {{ $offer->creatorProfile->display_name }}</span>
+<span class="eyebrow">{{ $offer->brandProfile?->company_name ?? $offer->customerProfile?->user->name }} × {{ $offer->creatorProfile->display_name }}</span>
 <p>{{ $offer->scope }}</p>
 <div class="campaign-meta">
 <span>₹{{ number_format($offer->price_minor/100,2) }}</span>
@@ -47,7 +47,7 @@
 <button class="button button-outline" wire:click="respond({{ $offer->id }},'changes_requested')">Propose changes</button>
 <button class="text-link" wire:click="respond({{ $offer->id }},'rejected')">Decline</button>
 </div>@endif
-@if(auth()->user()->role === 'brand' && $offer->status === 'changes_requested')<form wire:submit="revise({{ $offer->id }})" class="offer-form">
+@if(in_array(auth()->user()->role, ['brand', 'customer'], true) && $offer->status === 'changes_requested')<form wire:submit="revise({{ $offer->id }})" class="offer-form">
 <label>Revised scope<textarea wire:model="revisedScopes.{{ $offer->id }}" required>
 </textarea>
 </label>
@@ -59,7 +59,7 @@
 </div>
 <button class="button button-purple">Send revised brief</button>
 </form>@endif
-@if(auth()->user()->role === 'brand' && in_array($offer->status,['pending','changes_requested']))<button class="text-link" style="margin-top:20px" wire:click="respond({{ $offer->id }},'cancelled')">Cancel request</button>@endif
+@if(in_array(auth()->user()->role, ['brand', 'customer'], true) && in_array($offer->status,['pending','changes_requested']))<button class="text-link" style="margin-top:20px" wire:click="respond({{ $offer->id }},'cancelled')">Cancel request</button>@endif
 @if($offer->collaboration)<div class="collaboration-detail">
 <h3>Agreed collaboration</h3>
 <p>Both parties confirmed the scope and commercial terms.</p>@foreach($offer->collaboration->deliverables as $deliverable)<div class="item-row" wire:key="deliverable-{{ $deliverable->id }}">
@@ -77,13 +77,13 @@
 </label>
 <button class="button button-purple" wire:loading.attr="disabled">Submit deliverables</button>
 </form>@endif
-@if(auth()->user()->role === 'brand' && $offer->collaboration->status === 'submitted')<div class="campaign-actions">
+@if(in_array(auth()->user()->role, ['brand', 'customer'], true) && $offer->collaboration->status === 'submitted')<div class="campaign-actions">
 <button class="button button-purple" wire:click="review({{ $offer->collaboration->id }},'completed')">Approve & complete</button>
 <button class="button button-outline" wire:click="review({{ $offer->collaboration->id }},'revision_requested')">Request revision</button>
 </div>@endif</div>@endif</article>@empty<div class="empty-state">
 <div class="empty-symbol">✳</div>
 <h2>A great collaboration starts with hello.</h2>
-<p>{{ auth()->user()->role === 'brand' ? 'Find a creator you connect with and send them a brief from their profile.' : 'Your collaboration requests will appear here. Keep making work that feels like you.' }}</p>
+<p>{{ in_array(auth()->user()->role, ['brand', 'customer'], true) ? 'Find a creator you connect with and send them a brief from their profile.' : 'Your collaboration requests will appear here. Keep making work that feels like you.' }}</p>
 <a class="button button-outline" href="{{ route('creators') }}">Explore creators <x-market-icon name="arrow-up-right" /></a>
 </div>@endforelse
 <section class="workspace-card" style="margin-top:30px">

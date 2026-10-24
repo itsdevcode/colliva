@@ -6,7 +6,7 @@
 </h1>
 <p>Build a profile that feels like you. Every change is saved as a private draft.</p>
 </div>@if($profile)<span class="status-badge">{{ $profile->status }}</span>@endif</div>
-<x-workspace-errors/>@if($profile?->moderation_note)<div class="notice notice-neutral">Review feedback: {{ $profile->moderation_note }}</div>@endif
+<a class="text-link" href="{{ route('creator.dashboard') }}">Go to your dashboard <x-market-icon name="arrow-right" /></a><x-workspace-errors/>@if($profile?->moderation_note)<div class="notice notice-neutral">Review feedback: {{ $profile->moderation_note }}</div>@endif
 <nav class="studio-tabs" aria-label="Onboarding steps">@foreach(['Your profile','Social accounts','Categories','Portfolio','Services','Review & submit'] as $label)<button wire:click="$set('step', {{ $loop->iteration }})" @class(['active'=>$step === $loop->iteration]) aria-current="{{ $step === $loop->iteration ? 'step':'false' }}">{{ $loop->iteration }}. {{ $label }}</button>@endforeach</nav>
 @if($step === 1 || $step === 3)<section class="workspace-card">
 <h2>{{ $step === 1 ? 'Start with your story.' : 'Find your creative lane.' }}</h2>

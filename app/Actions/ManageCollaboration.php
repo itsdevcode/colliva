@@ -18,7 +18,7 @@ class ManageCollaboration
         DB::transaction(function () use ($user, $requestId, $decision, $response) {
             $offer = CollaborationRequest::lockForUpdate()->findOrFail($requestId);
             $isCreator = $offer->creatorProfile->user_id === $user->id && $user->role === 'creator';
-            $isBrand = $offer->brandProfile->user_id === $user->id && $user->role === 'brand';
+            $isBrand = $offer->hirer()->id === $user->id && in_array($user->role, ['brand', 'customer'], true);
             abort_unless($isCreator || $isBrand, 404);
             if ($isBrand && $decision === 'cancelled' && in_array($offer->status, ['pending', 'changes_requested'], true)) {
                 $offer->forceFill(['status' => 'cancelled'])->save();
@@ -33,7 +33,7 @@ class ManageCollaboration
             if ($decision === 'accepted') {
                 $offer->collaboration()->create([]);
             }
-            $offer->brandProfile->user->notify(new MarketplaceUpdate('Your brief “'.$offer->title.'” was '.$decision.'.'));
+            $offer->hirer()->notify(new MarketplaceUpdate('Your brief “'.$offer->title.'” was '.$decision.'.'));
         });
     }
 
@@ -41,7 +41,7 @@ class ManageCollaboration
     {
         DB::transaction(function () use ($user, $requestId, $scope, $priceMinor, $deadline) {
             $offer = CollaborationRequest::lockForUpdate()->findOrFail($requestId);
-            abort_unless($user->role === 'brand' && $offer->brandProfile->user_id === $user->id, 404);
+            abort_unless(in_array($user->role, ['brand', 'customer'], true) && $offer->hirer()->id === $user->id, 404);
             if ($offer->status !== 'changes_requested') {
                 throw ValidationException::withMessages(['offer' => 'Only a request awaiting changes can be revised.']);
             }
@@ -62,7 +62,7 @@ class ManageCollaboration
             Validator::make(compact('url', 'notes'), ['url' => ['required', 'url:https', 'max:255'], 'notes' => ['required', 'string', 'max:5000']])->validate();
             $collaboration->deliverables()->create(compact('url', 'notes'));
             $collaboration->forceFill(['status' => 'submitted'])->save();
-            $collaboration->request->brandProfile->user->notify(new MarketplaceUpdate('Deliverables are ready to review.'));
+            $collaboration->request->hirer()->notify(new MarketplaceUpdate('Deliverables are ready to review.'));
         });
     }
 

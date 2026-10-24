@@ -8,7 +8,7 @@
 </div>
 <a class="button button-purple" href="{{ route('campaigns') }}">Create a campaign <x-market-icon name="arrow-up-right" /></a>
 </div>
-<x-workspace-errors/>
+<a class="text-link" href="{{ route('brand.dashboard') }}">Go to your dashboard <x-market-icon name="arrow-right" /></a><x-workspace-errors/>
 <section class="workspace-card">
 <h2>A little about your business.</h2>
 <form wire:submit="save">
@@ -28,7 +28,7 @@
 </form>
 </section>
 <section class="workspace-card">
-<h2>Your creative shortlist.</h2>@forelse($savedCreators as $creator)<div class="item-row" wire:key="saved-{{ $creator->id }}">
+<h2 id="saved-creators">Your creative shortlist.</h2>@forelse($savedCreators as $creator)<div class="item-row" wire:key="saved-{{ $creator->id }}">
 <div>
 <a class="text-link" href="{{ route('creator.show',$creator->slug) }}">{{ $creator->display_name }} <x-market-icon name="arrow-up-right" /></a>
 <small>{{ $creator->location->name }} · {{ $creator->category->name }}</small>

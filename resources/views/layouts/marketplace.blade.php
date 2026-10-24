@@ -18,20 +18,20 @@
 </head>
 <body class="marketplace antialiased">
 <a class="skip-link" href="#main">Skip to content</a>
-<header class="site-header" x-data>
+<header class="site-header" x-data="{ scrolled: window.scrollY > 12 }" @scroll.window.passive="scrolled = window.scrollY > 12" :class="{ 'is-scrolled': scrolled }">
     <a class="wordmark" href="{{ route('home') }}" aria-label="Colliva home">colliva<span class="brand-dot">.</span></a>
     <nav class="desktop-nav" aria-label="Main">
         <a href="{{ route('creators') }}">Discover Creators</a>
+        <a href="{{ route('for-creators') }}">For Creators</a>
+        <a href="{{ route('for-brands') }}">For Brands</a>
         <a href="{{ route('home') }}#how-it-works">How It Works</a>
-        <a href="{{ route('home') }}#for-brands">For Brands</a>
-        <a href="{{ route('home') }}#for-creators">For Creators</a>
     </nav>
     <div class="nav-actions">
         @auth
             <x-colliva-button :href="route('dashboard')" variant="outline" :small="true">My Workspace</x-colliva-button>
         @else
-            <a class="login-link" href="{{ route('login') }}">Sign In</a>
-            <x-colliva-button :href="route('register')" :small="true">Get Started</x-colliva-button>
+            <a class="login-link" href="{{ route('login') }}">Login</a>
+            <x-colliva-button :href="route('get-started')" :small="true">Get Started</x-colliva-button>
         @endauth
         <button type="button" class="menu-toggle icon-button" @click="$refs.navigation.showModal()" aria-label="Open navigation" aria-haspopup="dialog"><x-market-icon name="menu" /></button>
     </div>
@@ -39,21 +39,21 @@
         <nav class="drawer-links" aria-label="Mobile">
             <a href="{{ route('creators') }}">Discover Creators</a>
             <a href="{{ route('home') }}#how-it-works" @click="$refs.navigation.close()">How It Works</a>
-            <a href="{{ route('home') }}#for-brands" @click="$refs.navigation.close()">For Brands</a>
-            <a href="{{ route('home') }}#for-creators" @click="$refs.navigation.close()">For Creators</a>
+            <a href="{{ route('for-brands') }}" @click="$refs.navigation.close()">For Brands</a>
+            <a href="{{ route('for-creators') }}" @click="$refs.navigation.close()">For Creators</a>
             @auth
-                <a href="{{ route('dashboard') }}" @if(request()->routeIs('dashboard')) aria-current="page" @endif>My Workspace</a>
+                <a href="{{ route('dashboard') }}" @if(request()->routeIs('dashboard', '*.dashboard')) aria-current="page" @endif>My Workspace</a>
             @else
-                <a href="{{ route('login') }}">Sign In</a>
-                <x-colliva-button :href="route('register')">Get Started</x-colliva-button>
+                <a href="{{ route('login') }}">Login</a>
+                <x-colliva-button :href="route('get-started')">Get Started</x-colliva-button>
             @endauth
         </nav>
     </x-colliva-drawer>
 </header>
 @auth
 <nav class="workspace-nav" aria-label="Workspace">
-<a href="{{ route('dashboard') }}" @if(request()->routeIs('dashboard')) aria-current="page" @endif>Overview</a>@if(auth()->user()->role === 'creator')<a href="{{ route('creator.studio') }}" @if(request()->routeIs('creator.studio')) aria-current="page" @endif>My creator studio</a>@elseif(auth()->user()->role === 'brand')<a href="{{ route('brand.workspace') }}" @if(request()->routeIs('brand.workspace')) aria-current="page" @endif>Business & saved creators</a>
-<a href="{{ route('creators') }}">Discover creators</a>@else<a href="{{ route('filament.admin.pages.dashboard') }}">Administration</a>@endif<a href="{{ route('campaigns') }}" @if(request()->routeIs('campaigns')) aria-current="page" @endif>Campaigns</a>
+<a href="{{ route('dashboard') }}" @if(request()->routeIs('dashboard', '*.dashboard')) aria-current="page" @endif>Overview</a>@if(auth()->user()->role === 'creator')<a href="{{ route('creator.studio') }}" @if(request()->routeIs('creator.studio')) aria-current="page" @endif>My creator studio</a>@elseif(auth()->user()->role === 'brand')<a href="{{ route('brand.workspace') }}" @if(request()->routeIs('brand.workspace')) aria-current="page" @endif>Business & saved creators</a>
+<a href="{{ route('creators') }}">Discover creators</a>@elseif(auth()->user()->role === 'customer')<a href="{{ route('creators') }}">Browse creators</a><a href="{{ route('customer.dashboard') }}#saved-creators">Saved creators</a>@else<a href="{{ route('filament.admin.pages.dashboard') }}">Administration</a>@endif@if(auth()->user()->role !== 'customer')<a href="{{ route('campaigns') }}" @if(request()->routeIs('campaigns')) aria-current="page" @endif>Campaigns</a>@endif
 <a href="{{ route('collaborations') }}" @if(request()->routeIs('collaborations')) aria-current="page" @endif>Collaborations & notifications</a>
 <a href="{{ route('profile.edit') }}" @if(request()->routeIs('profile.edit')) aria-current="page" @endif>Settings</a>
 <form action="{{ route('logout') }}" method="post">@csrf<button>Log out</button>
@@ -76,8 +76,9 @@
 </div>
 <div>
 <span class="eyebrow">GET STARTED</span>
-<a href="{{ route('register',['role'=>'brand']) }}">For brands</a>
-<a href="{{ route('register',['role'=>'creator']) }}">For creators</a>
+<a href="{{ route('for-brands') }}">For brands</a>
+<a href="{{ route('for-creators') }}">For creators</a>
+<a href="{{ route('for-customers') }}">For customers</a>
 <a href="{{ route('home') }}#faq">FAQs</a>
 </div>
 <div class="footer-note">

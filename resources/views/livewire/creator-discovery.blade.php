@@ -60,7 +60,7 @@
 </div>
 <div wire:loading.remove>
 <div class="creator-grid discovery-results">@forelse($creators as $creator)<div wire:key="creator-{{ $creator->id }}">
-<x-creator-card :creator="$creator"/>@if(auth()->user()?->role === 'brand')<button class="save-creator" wire:click="saveCreator({{ $creator->id }})">
+<x-creator-card :creator="$creator"/>@if(in_array(auth()->user()?->role, ['brand', 'customer'], true))<button class="save-creator" wire:click="saveCreator({{ $creator->id }})">
 <x-market-icon name="heart"/>Save creator</button>@endif</div>@empty
 <div class="discovery-empty">
     <span class="discovery-empty-icon"><x-market-icon name="search" /></span>
@@ -68,7 +68,7 @@
     <p>{{ count($activeFilters) ? 'Try a different category, a nearby city, or a wider budget. Your next creative connection could be one filter away.' : 'Our local creator community is taking shape. Check back soon, or join and put your work in front of brands.' }}</p>
     <div class="discovery-empty-actions">
         @if(count($activeFilters))<x-colliva-button wire:click="clearFilters">Clear filters <x-market-icon name="arrow-right" /></x-colliva-button>@endif
-        <x-colliva-button :href="route('register', ['role' => 'creator'])" variant="outline">Join as Creator</x-colliva-button>
+        <x-colliva-button :href="route('for-creators')" variant="outline">Join as Creator</x-colliva-button>
     </div>
 </div>
 @if(count($activeFilters))

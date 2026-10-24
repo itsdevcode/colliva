@@ -33,7 +33,7 @@
 <p>{{ $package->description }}</p>
 <p>{{ $package->deliverables }}</p>
 <small>{{ $package->turnaround_days }} day turnaround · {{ $package->revision_policy }}</small>
-</article>@endforeach@if($creator->available)<a class="button button-purple" href="{{ auth()->check() ? route('collaborations',['creator'=>$creator->slug]) : route('register',['role'=>'brand']) }}">Send a collaboration brief <x-market-icon name="arrow-up-right"/>
+</article>@endforeach@if($creator->available)<a class="button button-purple" href="{{ auth()->check() ? route('collaborations',['creator'=>$creator->slug]) : route('get-started') }}">Send a collaboration brief <x-market-icon name="arrow-up-right"/>
 </a>@endif<small class="payment-note">Payments are agreed and coordinated directly. Colliva does not provide escrow or payment guarantees.</small>
 </aside>
 </div>
