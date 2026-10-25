@@ -12,7 +12,8 @@
 <x-market-icon name="pin"/>{{ $creator->location->name }}</span>
 </div>
 </div>
-<div class="creator-platforms" aria-label="Creator platforms">@foreach($creator->socialAccounts->pluck('platform')->unique() as $platform)<span>{{ ucfirst($platform) }}</span>@endforeach</div>
+<p class="creator-username">{{ '@'.$creator->slug }}</p><p class="creator-bio">{{ Str::limit($creator->bio, 120) }}</p>
+<div class="creator-platforms" aria-label="Creator platforms">@foreach($creator->socialAccounts as $account)<span><x-market-icon :name="$account->platform === 'instagram' ? 'camera' : ($account->platform === 'youtube' ? 'play' : 'globe')" />{{ ucfirst($account->platform) }}@if($account->followers !== null) · {{ number_format($account->followers) }} followers @endif</span>@endforeach</div>
 <div class="creator-card-bottom">
 <span>@if($creator->service_packages_min_price_minor !== null)From <strong>₹{{ number_format($creator->service_packages_min_price_minor/100) }}</strong>@else Enquire for pricing @endif
 </span>

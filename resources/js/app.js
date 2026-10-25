@@ -16,3 +16,30 @@ window.visualViewport?.addEventListener('resize', updateKeyboardState, { passive
 document.addEventListener('focusin', updateKeyboardState);
 document.addEventListener('focusout', () => requestAnimationFrame(updateKeyboardState));
 document.addEventListener('livewire:navigated', updateKeyboardState);
+
+
+let supportDiscoveryHeaderObserver;
+
+function observeSupportDiscoveryHeader() {
+    supportDiscoveryHeaderObserver?.disconnect();
+    document.documentElement.style.removeProperty('--colliva-header-height');
+    if (!document.body.hasAttribute('data-support-discovery')) {
+        return;
+    }
+
+    const header = document.querySelector('.site-header');
+    if (!header) {
+        return;
+    }
+
+    const measureHeader = () => {
+        document.documentElement.style.setProperty('--colliva-header-height', `${header.getBoundingClientRect().height}px`);
+    };
+    measureHeader();
+    supportDiscoveryHeaderObserver = new ResizeObserver(measureHeader);
+    supportDiscoveryHeaderObserver.observe(header);
+}
+
+observeSupportDiscoveryHeader();
+document.addEventListener('livewire:navigated', observeSupportDiscoveryHeader);
+document.addEventListener('livewire:navigating', () => supportDiscoveryHeaderObserver?.disconnect());

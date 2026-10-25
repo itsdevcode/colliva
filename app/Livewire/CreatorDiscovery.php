@@ -174,8 +174,12 @@ class CreatorDiscovery extends Component
     public function render(): View
     {
         $query = CreatorProfile::publiclyVisible()->with(['location', 'category', 'socialAccounts', 'portfolioItems' => fn ($q) => $q->where('hidden', false)])->withMin('servicePackages', 'price_minor');
+        $query->withMax('socialAccounts', 'followers')->withCount(['portfolioItems as public_portfolio_count' => fn ($q) => $q->where('hidden', false)]);
         if ($this->search !== '') {
-            $query->where(fn ($q) => $q->whereLike('display_name', '%'.mb_substr($this->search, 0, 100).'%')->orWhereLike('slug', '%'.mb_substr($this->search, 0, 100).'%'));
+            $term = '%'.mb_substr($this->search, 0, 100).'%';
+            $query->where(fn ($q) => $q->whereLike('display_name', $term)->orWhereLike('slug', $term)
+                ->orWhereHas('category', fn ($category) => $category->whereLike('name', $term)->orWhereLike('slug', $term))
+                ->orWhereHas('categories', fn ($category) => $category->whereLike('name', $term)->orWhereLike('slug', $term)));
         }
         if ($this->city !== '') {
             $query->whereHas('location', fn ($q) => $q->where('slug', $this->city));
@@ -207,6 +211,22 @@ class CreatorDiscovery extends Component
         }
         if (in_array($this->sort, ['price-asc', 'price-desc'], true)) {
             $query->orderBy('service_packages_min_price_minor', $this->sort === 'price-asc' ? 'asc' : 'desc');
+        }
+        if (in_array($this->sort, ['recommended', 'relevant'], true)) {
+            foreach (config('discovery.recommended_order', []) as $criterion) {
+                match ($criterion) {
+                    'verified' => $query->orderByRaw('CASE WHEN verified_at IS NOT NULL THEN 1 ELSE 0 END DESC'),
+                    'portfolio' => $query->orderByDesc('public_portfolio_count'),
+                    'activity' => $query->orderByDesc('updated_at'),
+                    'followers' => $query->orderByRaw('COALESCE((SELECT MAX(followers) FROM social_accounts WHERE social_accounts.creator_profile_id = creator_profiles.id), 0) DESC'),
+                    default => null,
+                };
+            }
+        } elseif ($this->sort === 'followers') {
+            $query->orderByRaw('COALESCE((SELECT MAX(followers) FROM social_accounts WHERE social_accounts.creator_profile_id = creator_profiles.id), 0) DESC');
+        }
+        if ($this->sort === 'recent') {
+            $query->orderByDesc('created_at');
         }
 
         $locations = Location::orderBy('name')->get();
