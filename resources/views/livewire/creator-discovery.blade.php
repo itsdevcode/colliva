@@ -1,8 +1,6 @@
 <div class="container section discovery-page" x-data @if(request('filters') === 'open') x-init="$nextTick(() => $wire.openFilters().then(() => $refs.filters.showModal()))" @endif @filters-applied.window="$refs.filters.close()">
 <span class="eyebrow">Discover your next creative partner</span>
-<div class="section-heading">
-    <div><h1>Find your creative partner.</h1><p>Compare original work, platforms, and services. Find the right fit for your project.</p></div>
-</div>
+<div class="section-heading"><div><h1>Find your creative partner.</h1><p>Compare original work, platforms, and services. Find the right fit for your project.</p></div></div>
 <div class="discovery-platforms" aria-label="Filter by creator platform">
     @foreach(['' => 'All creators', 'instagram' => 'Instagram', 'youtube' => 'YouTube', 'ugc' => 'UGC creators'] as $value => $label)
         <button type="button" wire:click="$set('platform', '{{ $value }}')" @class(['is-active' => $platform === $value]) aria-pressed="{{ $platform === $value ? 'true' : 'false' }}">{{ $label }}</button>
@@ -22,7 +20,7 @@
 <div class="discovery-main">
 <div class="results-toolbar">
     <span class="results-count" role="status"><strong>{{ $creators->total() }} {{ Str::plural('creator', $creators->total()) }}</strong><span>{{ count($activeFilters) ? 'matching your search' : 'to discover' }}</span></span>
-    <x-filter-select class="sort-select" model="sort" label="Sort by" :value="$sort" :options="['recent' => 'Recently joined', 'price-asc' => 'Price: low to high', 'price-desc' => 'Price: high to low', 'relevant' => 'Relevant match']" />
+    <x-filter-select class="sort-select" model="sort" label="Sort by" :value="$sort" :options="['recommended' => 'Recommended', 'followers' => 'Most followers', 'recent' => 'Recently joined', 'price-asc' => 'Price: low to high', 'price-desc' => 'Price: high to low']" />
 </div>
 <x-active-creator-filters :filters="$activeFilters" />
 <div wire:loading.delay class="loading-state" role="status">

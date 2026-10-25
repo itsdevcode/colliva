@@ -89,3 +89,23 @@ Visual review artifacts are local, ignored files under `storage/framework/testin
 ### Discovery layout refinement
 
 The results area now uses a compact, light empty state with search-oriented actions, an explicit zero-results count, removable active-filter chips, and links to alternative categories. Default launch and filtered no-match messages differ. Sidebar and sort dropdowns share `x-filter-select`; native numeric/search inputs retain their debounce and validation. Suggestions span the complete results grid, and mobile platform tabs use two balanced columns. Browser checks confirmed location selection, selective chip removal, sorting, reset, dropdowns inside the mobile dialog, and no overflow at 375/768/1024/1440px. Existing marketplace feature tests passed (30 tests, one PostgreSQL-specific skip, 145 assertions); production build passed.
+
+
+## Top Influencers leaderboard methodology
+
+`/top-influencers` is a standalone Livewire leaderboard, separate from the searchable `/creators` directory. It has platform tabs, a category selector and four allowed sort modes. The existing optional location/category topic routes still work. Topic pages remain `noindex` until meaningful local content is curated.
+
+`App\Actions\RankCreators` reuses `CreatorProfile::publiclyVisible()`: approved status, publication consent, non-demo data, location, category, photo, verified creator-account email, a service package and at least one visible portfolio item. Availability is additionally required when `discovery.require_available` is enabled.
+
+Recommended rank uses a configurable weighted readiness score (`config/leaderboard.php`):
+
+- Staff-verified creator profile: 25 points.
+- Profile details: up to 20 points, split equally between biography, photo, at least one language and at least one social account.
+- Public portfolio: up to 20 points, proportional to the number of visible items, capped at five. Hidden items never count.
+- Service packages: up to 15 points, proportional to package count, capped at three.
+- Profile activity: 10 points if `updated_at` falls within the previous 30 days, excluding future timestamps. This is profile activity, not social engagement.
+- Audience: up to 10 points, proportional to the largest follower count on one staff-verified social account, capped at 100,000. Missing and unverified metrics earn no audience points.
+
+The default maximum is 100 points. Scores are calculated in SQL before database pagination; related data is eager loaded. Equal scores use the earlier profile ID first. Platform/category/location selections define the eligible subset, so visible ranks are within that selection. Most followers, Recently active and Lowest starting price display positions in those alternate orders. Followers used for follower sorting can be creator-reported and are labelled accordingly.
+
+This is profile readiness for discovery, not a performance guarantee or an objective assessment of creative talent. No fictional engagement scores, growth indicators or ratings are used. The page presents this methodology next to the intro. Desktop uses full-width ranked rows; mobile uses stacked cards with prominent rank badges. Zero eligible profiles produce a dedicated leaderboard invitation.

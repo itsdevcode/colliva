@@ -9,7 +9,7 @@ use App\Models\SocialAccount;
 use Livewire\Livewire;
 
 test('homepage renders the compact shared search without the old expanded selects', function () {
-    $this->get(route('home'))->assertOk()->assertSee('All Filters')->assertSee('aria-label="Find creators"', false)->assertDontSee('Location &amp; category', false)->assertDontSee('<select', false);
+    $this->get(route('home'))->assertOk()->assertSee('All filters')->assertSee('aria-label="Find creators"', false)->assertDontSee('Location &amp; category', false)->assertDontSee('<select', false)->assertSee('Search creators or niches')->assertDontSee('0 creators found')->assertDontSee('View results');
 });
 
 test('each homepage filter produces the same matching discovery results', function (string $property, string|bool $value) {
@@ -65,4 +65,16 @@ test('homepage query filters initialize the shared state and retain sort when na
 
 test('unknown quick filter presets cannot mutate arbitrary component properties', function () {
     Livewire::test(CreatorDiscovery::class, ['compact' => true])->call('toggleQuickFilter', 'compact')->assertNotFound();
+});
+
+test('homepage niche search reaches matching approved creators in the discovery query', function () {
+    $category = Category::factory()->create(['name' => 'Travel Stories', 'slug' => 'travel-stories']);
+    $primary = CreatorProfile::factory()->approved()->create(['display_name' => 'Primary Niche Partner', 'category_id' => $category->id]);
+    $secondary = CreatorProfile::factory()->approved()->create(['display_name' => 'Secondary Niche Partner']);
+    $secondary->categories()->attach($category);
+    CreatorProfile::factory()->approved()->create(['display_name' => 'Unrelated Partner']);
+    CreatorProfile::factory()->approved()->create(['display_name' => 'Unpublished Travel Partner', 'category_id' => $category->id, 'publication_consented_at' => null]);
+
+    Livewire::test(CreatorDiscovery::class, ['compact' => true])->set('search', 'TRAVEL')->call('searchCreators')->assertRedirect(route('creators', ['search' => 'TRAVEL']));
+    $this->get(route('creators', ['search' => 'TRAVEL']))->assertOk()->assertSee('Primary Niche Partner')->assertSee('Secondary Niche Partner')->assertDontSee('Unrelated Partner')->assertDontSee('Unpublished Travel Partner');
 });

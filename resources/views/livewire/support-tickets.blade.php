@@ -1,0 +1,14 @@
+<div class="container section support-form-page">
+<nav class="breadcrumb" aria-label="Breadcrumb"><a href="{{ route('support') }}">Support Center</a><span>/</span><a href="{{ route('support.tickets') }}">My Support Tickets</a>@if($ticket)<span>/</span><span>Conversation</span>@endif</nav>
+<x-workspace-errors />
+@if($ticket)
+<div class="section-heading"><div><span class="eyebrow ticket-reference">{{ $ticket->reference }}</span><h1>{{ $ticket->subject }}</h1><p>{{ \App\Models\SupportTicket::CATEGORIES[$ticket->category] ?? $ticket->category }} · <span class="status-badge">{{ \App\Models\SupportTicket::STATUSES[$ticket->status] }}</span></p></div></div>
+<article class="support-message"><header><strong>Your request</strong><time>{{ $ticket->created_at->format('j M Y, H:i') }}</time></header><p>{{ $ticket->description }}</p>@if($ticket->related_reference)<small>Related reference: {{ $ticket->related_reference }}</small>@endif</article>
+@foreach($messages as $message)<article @class(['support-message', 'staff-reply' => $message->staff]) wire:key="message-{{ $message->id }}"><header><strong>{{ $message->staff ? 'Colliva Support' : 'You' }}</strong><time>{{ $message->created_at->format('j M Y, H:i') }}</time></header><p>{{ $message->body }}</p></article>@endforeach
+{{ $messages->links() }}
+@can('reply', $ticket)<form class="support-ticket-form" wire:submit="reply"><label>Your follow-up<textarea wire:model="body" rows="5" minlength="5" maxlength="10000" required></textarea>@error('body')<span class="field-error">{{ $message }}</span>@enderror</label><x-colliva-button type="submit" wire:loading.attr="disabled">Send message</x-colliva-button><span wire:loading wire:target="reply" role="status">Saving message…</span></form>@else<p class="support-form-note">This conversation is {{ strtolower(\App\Models\SupportTicket::STATUSES[$ticket->status]) }}. <a class="text-link" href="{{ route('support.contact') }}">Open a new request</a> and include this ticket reference if you need more help.</p>@endcan
+@else
+<div class="section-heading"><div><span class="eyebrow">Your conversations</span><h1>My Support Tickets</h1><p>Follow your requests, read replies and keep the conversation going.</p></div><x-colliva-button :href="route('support.contact')">New request</x-colliva-button></div>
+<div class="support-ticket-list">@forelse($tickets as $item)<a href="{{ route('support.ticket', $item->reference) }}" wire:key="ticket-{{ $item->id }}"><div><small class="ticket-reference">{{ $item->reference }}</small><h2>{{ $item->subject }}</h2><p>Updated {{ $item->last_activity_at->diffForHumans() }}</p></div><span class="status-badge">{{ \App\Models\SupportTicket::STATUSES[$item->status] }}</span><x-market-icon name="arrow-right" /></a>@empty<x-colliva-empty title="A clear inbox." description="You have no support requests linked to this account. We’re here when you need us." />@endforelse</div>{{ $tickets->links() }}
+@endif
+</div>

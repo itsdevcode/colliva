@@ -10,18 +10,19 @@
 <meta property="og:description" content="Discover local talent. Create something extraordinary.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{ url()->current() }}">
-@auth <meta name="robots" content="noindex,nofollow"> @endauth
+@auth <meta name="robots" content="noindex,nofollow"> @else @if(request()->routeIs('support.contact', 'support.ticket*', 'top-influencers.topic') || request()->query())<meta name="robots" content="noindex,follow">@endif @endauth
 <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
 @fonts
 @vite(['resources/css/app.css','resources/js/app.js'])
 @livewireStyles
 </head>
-<body class="marketplace antialiased">
+<body class="marketplace antialiased" @if(request()->routeIs('support*', 'top-influencers*')) data-support-discovery @endif>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header" x-data="{ scrolled: window.scrollY > 12 }" @scroll.window.passive="scrolled = window.scrollY > 12" :class="{ 'is-scrolled': scrolled }">
     <a class="wordmark" href="{{ route('home') }}" aria-label="Colliva home">colliva<span class="brand-dot">.</span></a>
     <nav class="desktop-nav" aria-label="Main">
         <a href="{{ route('creators') }}">Discover Creators</a>
+        <a href="{{ route('top-influencers') }}">Top Influencers</a>
         <a href="{{ route('for-creators') }}">For Creators</a>
         <a href="{{ route('for-brands') }}">For Brands</a>
         <a href="{{ route('home') }}#how-it-works">How It Works</a>
@@ -39,6 +40,8 @@
     <x-colliva-drawer name="navigation" title="Navigation">
         <nav class="drawer-links" aria-label="Mobile" @click="if ($event.target.closest('a')) $refs.navigation.close()">
             <a href="{{ route('creators') }}">Discover Creators</a>
+            <a href="{{ route('top-influencers') }}">Top Influencers</a>
+            <a href="{{ route('support') }}">Support Center</a>
             <a href="{{ route('home') }}#how-it-works" @click="$refs.navigation.close()">How It Works</a>
             <a href="{{ route('for-brands') }}" @click="$refs.navigation.close()">For Brands</a>
             <a href="{{ route('for-creators') }}" @click="$refs.navigation.close()">For Creators</a>
@@ -60,6 +63,7 @@
 <a href="{{ route('dashboard') }}" @if(request()->routeIs('dashboard', '*.dashboard')) aria-current="page" @endif>Overview</a>@if(auth()->user()->role === 'creator')<a href="{{ route('creator.studio') }}" @if(request()->routeIs('creator.studio')) aria-current="page" @endif>My creator studio</a>@elseif(auth()->user()->role === 'brand')<a href="{{ route('brand.workspace') }}" @if(request()->routeIs('brand.workspace')) aria-current="page" @endif>Business & saved creators</a>
 <a href="{{ route('creators') }}">Discover creators</a>@elseif(auth()->user()->role === 'customer')<a href="{{ route('creators') }}">Browse creators</a><a href="{{ route('customer.dashboard') }}#saved-creators">Saved creators</a>@else<a href="{{ route('filament.admin.pages.dashboard') }}">Administration</a>@endif@if(auth()->user()->role !== 'customer')<a href="{{ route('campaigns') }}" @if(request()->routeIs('campaigns')) aria-current="page" @endif>Campaigns</a>@endif
 <a href="{{ route('collaborations') }}" @if(request()->routeIs('collaborations')) aria-current="page" @endif>Collaborations & notifications</a>
+<a href="{{ route('support.tickets') }}">My Support Tickets</a>
 <a href="{{ route('profile.edit') }}" @if(request()->routeIs('profile.edit')) aria-current="page" @endif>Settings</a>
 <form action="{{ route('logout') }}" method="post">@csrf<button>Log out</button>
 </form>
@@ -86,6 +90,7 @@
 <a href="{{ route('for-creators') }}">For creators</a>
 <a href="{{ route('for-customers') }}">For customers</a>
 <a href="{{ route('pricing') }}" @if(request()->routeIs('pricing')) aria-current="page" @endif>Pricing &amp; Fees</a>
+<a href="{{ route('support') }}">Support Center</a>
 <a href="{{ route('home') }}#faq">FAQs</a>
 </div>
 <div class="footer-note">
